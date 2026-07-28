@@ -51,7 +51,7 @@
 <script src="truss.js"></script>
 <script>
 (function () {
-  var ENG = window.Truss, OSNAME = "McArthur Engineering", ICS = "truss-calendar.ics";
+  var ENG = window.Truss, OSNAME = "McArthur Engineering", ICS = "mcarthur-calendar.ics";
   /* ---- per-OS config: categories + events (the only per-OS part) ---- */
   var CATS = [
     { key:"milestone", name:"Milestones", color:"#b23b2f" },
@@ -61,14 +61,18 @@
     { key:"remind", name:"Reminders", color:"#6a5a8a" }
   ];
   var EVENTS = [
-    { date:"2026-07-27", title:"PE seal review — Bridge St", cat:"milestone" },
-    { date:"2026-07-29", time:"14:00", title:"30% design review — client", cat:"review" },
-    { date:"2026-07-31", title:"Submittal — structural calcs", cat:"submittal" },
-    { date:"2026-08-04", time:"09:00", title:"Site visit — foundation", cat:"site" },
-    { date:"2026-08-06", title:"IFC package due", cat:"submittal" },
-    { date:"2026-08-11", time:"10:00", title:"60% review", cat:"review" },
-    { date:"2026-08-14", time:"09:00", title:"Site visit — framing", cat:"site" },
-    { date:"2026-08-18", title:"PE seal — Tower project", cat:"milestone" }
+    { date:"2026-07-29", time:"14:00", title:"The Arc — 60% design review with client", cat:"review" },
+    { date:"2026-07-31", title:"The Arc — stormwater submittal to Post Falls", cat:"submittal" },
+    { date:"2026-08-04", time:"09:00", title:"Site walk — The Arc grading & utilities", cat:"site" },
+    { date:"2026-08-06", title:"City of Rathdrum — pressure-zone model review", cat:"review" },
+    { date:"2026-08-11", time:"10:00", title:"Prairie Ave culvert — warranty walk", cat:"site" },
+    { date:"2026-08-14", title:"Rathdrum Prairie Sub Ph 2 — 30% package due", cat:"milestone" },
+    { date:"2026-08-19", title:"Highway 41 frontage — fee letter follow-up", cat:"remind" },
+    { date:"2026-08-25", time:"13:00", title:"The Arc — utility coordination meeting", cat:"review" },
+    { date:"2026-09-02", time:"09:30", title:"Depot St — CA site visit, signal punchlist", cat:"site" },
+    { date:"2026-09-09", time:"12:00", title:"PDH lunch & learn — license hours check", cat:"remind" },
+    { date:"2026-09-15", title:"The Arc — 90% QA/QC review", cat:"milestone" },
+    { date:"2026-09-30", title:"The Arc — 90% package to client (target)", cat:"milestone" }
   ];
   var REF = new Date("2026-07-27T12:00:00"); /* the OS "today" */
 

@@ -1,0 +1,79 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//McArthur Engineering//Firm Calendar//EN
+CALSCALE:GREGORIAN
+X-WR-CALNAME:McArthur Engineering
+X-WR-TIMEZONE:America/Los_Angeles
+BEGIN:VEVENT
+UID:mca-000@mcarthur-eng
+DTSTART;TZID=America/Los_Angeles:20260729T140000
+SUMMARY:The Arc - 60% design review with client
+CATEGORIES:REVIEW
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-001@mcarthur-eng
+DTSTART;VALUE=DATE:20260731
+SUMMARY:The Arc - stormwater submittal to Post Falls
+CATEGORIES:SUBMITTAL
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-002@mcarthur-eng
+DTSTART;TZID=America/Los_Angeles:20260804T090000
+SUMMARY:Site walk - The Arc grading & utilities
+CATEGORIES:SITE
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-003@mcarthur-eng
+DTSTART;VALUE=DATE:20260806
+SUMMARY:City of Rathdrum - pressure-zone model review
+CATEGORIES:REVIEW
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-004@mcarthur-eng
+DTSTART;TZID=America/Los_Angeles:20260811T100000
+SUMMARY:Prairie Ave culvert - warranty walk
+CATEGORIES:SITE
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-005@mcarthur-eng
+DTSTART;VALUE=DATE:20260814
+SUMMARY:Rathdrum Prairie Sub Ph 2 - 30% package due
+CATEGORIES:MILESTONE
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-006@mcarthur-eng
+DTSTART;VALUE=DATE:20260819
+SUMMARY:Highway 41 frontage - fee letter follow-up
+CATEGORIES:REMIND
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-007@mcarthur-eng
+DTSTART;TZID=America/Los_Angeles:20260825T130000
+SUMMARY:The Arc - utility coordination meeting
+CATEGORIES:REVIEW
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-008@mcarthur-eng
+DTSTART;TZID=America/Los_Angeles:20260902T093000
+SUMMARY:Depot St - CA site visit, signal punchlist
+CATEGORIES:SITE
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-009@mcarthur-eng
+DTSTART;TZID=America/Los_Angeles:20260909T120000
+SUMMARY:PDH lunch & learn - license hours check
+CATEGORIES:REMIND
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-010@mcarthur-eng
+DTSTART;VALUE=DATE:20260915
+SUMMARY:The Arc - 90% QA/QC review
+CATEGORIES:MILESTONE
+END:VEVENT
+BEGIN:VEVENT
+UID:mca-011@mcarthur-eng
+DTSTART;VALUE=DATE:20260930
+SUMMARY:The Arc - 90% package to client (target)
+CATEGORIES:MILESTONE
+END:VEVENT
+END:VCALENDAR
