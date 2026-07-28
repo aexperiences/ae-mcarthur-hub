@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Staff Sign-in · McArthur Engineering</title>
+<title>Your Office · McArthur Engineering</title>
 <link rel="icon" href="mca-mark.svg">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
 <style>
@@ -8,33 +8,40 @@
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
 background:linear-gradient(160deg,#1a2b3a,#22384c 60%,#2c4258);font-family:'IBM Plex Sans',system-ui,sans-serif;padding:22px}
 .bp{position:fixed;inset:0;opacity:.13;background-image:linear-gradient(#6f9bbd 1px,transparent 1px),linear-gradient(90deg,#6f9bbd 1px,transparent 1px);background-size:34px 34px}
-.card{position:relative;background:var(--paper);border-radius:20px;max-width:420px;width:100%;padding:38px 36px 30px;box-shadow:0 40px 90px rgba(0,0,0,.4);border-top:5px solid var(--amber)}
-.mk{width:56px;height:56px;display:block;margin:0 auto 14px}
-h1{font-family:'Fraunces',serif;font-weight:600;font-size:23px;text-align:center;margin:0 0 3px;color:var(--navy)}
-.sub{text-align:center;color:var(--mut);font-size:13px;margin:0 0 22px}
-label{display:block;font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 5px}
-input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 13px;font:inherit;background:#fff}
-input:focus{outline:none;border-color:var(--blue)}
-.btn{width:100%;margin-top:20px;background:var(--amber);color:#241a08;border:none;border-radius:10px;padding:13px;font-weight:700;font-size:15px;cursor:pointer}
+.card{position:relative;background:var(--paper);border-radius:20px;max-width:460px;width:100%;padding:38px 36px 28px;box-shadow:0 40px 90px rgba(0,0,0,.4);border-top:5px solid var(--amber)}
+.mk{width:60px;height:60px;display:block;margin:0 auto 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:24px;text-align:center;margin:0 0 4px;color:var(--navy)}
+.sub{text-align:center;color:var(--mut);font-size:13.5px;margin:0 0 24px;line-height:1.5}
+.btn{display:block;width:100%;background:var(--amber);color:#241a08;border:none;border-radius:12px;padding:17px;font-weight:700;font-size:17px;cursor:pointer;text-align:center;text-decoration:none}
 .btn:hover{background:#c9832a}
-.foot{text-align:center;font-size:11.5px;color:var(--mut);margin-top:16px}
-.back{display:block;text-align:center;margin-top:14px;color:var(--blue);font-size:13px;text-decoration:none}
-.note{background:#fff;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
+.who{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:18px;font-size:13px;color:var(--mut);line-height:1.55}
+.who b{color:var(--navy)}
+.roles{margin:8px 0 0;padding-left:16px}
+.roles li{margin:3px 0}
+.back{display:block;text-align:center;margin-top:16px;color:var(--blue);font-size:13.5px;text-decoration:none;font-weight:600}
+.foot{text-align:center;font-size:11.5px;color:var(--mut);margin-top:14px}
 </style></head><body>
 <div class="bp"></div>
 <div class="card">
   <img class="mk" src="mca-mark.svg" alt="McArthur Engineering">
-  <h1>McArthur Engineering</h1>
-  <div class="sub">Staff sign-in · Engineering OS</div>
-  <form onsubmit="location.href='dashboard.html';return false;">
-    <label>Name or email</label>
-    <input type="text" placeholder="scott@mcarthur-eng.com" autocomplete="username">
-    <label>Passcode</label>
-    <input type="password" placeholder="••••••••" autocomplete="current-password">
-    <button class="btn" type="submit">Enter the OS →</button>
-  </form>
-  <div class="note">Private preview — this is a live demo of the OS running in your browser. Nothing you type is stored or sent.</div>
-  <a class="back" href="index.html">← Back to the McArthur site</a>
-  <div class="foot">Built by Accelerated Experiences, LLC · an Esposito family business</div>
+  <h1>Your Office</h1>
+  <div class="sub">This is the <b>private</b> side — your operating system.<br>Nobody sees this but you and your people.</div>
+
+  <a class="btn" href="dashboard.html">Enter as Scott — one click, no password →</a>
+
+  <div class="who">
+    <b>When this is real, each person gets their own sign-in:</b>
+    <ul class="roles">
+      <li><b>Scott</b> — Owner. Sees everything: money, projects, the seal.</li>
+      <li><b>Christian</b> — Projects &amp; the field. No books.</li>
+      <li><b>Cameron</b> — Drawings &amp; projects.</li>
+      <li><b>Foster</b> — His assignments only.</li>
+      <li><b>Angela</b> — Front office, billing paperwork, calendar.</li>
+    </ul>
+    You decide who sees what. For this preview, the door's just open.
+  </div>
+
+  <a class="back" href="index.html">← Back to the public website</a>
+  <div class="foot">Private &amp; secure · Built by Accelerated Experiences, LLC — an Esposito family business</div>
 </div>
 </body></html>

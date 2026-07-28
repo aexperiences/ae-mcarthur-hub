@@ -134,9 +134,12 @@
   .wcard .eyebrow{color:var(--blue)}
   .wcard h2{font-size:27px;margin:10px 0 12px}
   .wcard p{color:var(--ink);font-size:15.5px;margin:0 0 14px}
-  .wcard .sig{font-family:'Fraunces',serif;font-style:italic;color:var(--navy);font-size:17px;margin-top:4px}
+  .wcard .sig{font-family:'Fraunces',serif;font-style:italic;color:var(--navy);font-size:15.5px;margin-top:8px}
   .wclose{position:absolute;top:14px;right:16px;font-size:22px;color:var(--mut);cursor:pointer;background:none;border:none}
-  .wcard .go{margin-top:20px}
+  .wcard .go{margin-top:18px}
+  .wstep{display:flex;gap:14px;align-items:flex-start;margin:13px 0;font-size:14.5px;line-height:1.5}
+  .wnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin-top:2px}
+  .wcard{max-height:92vh;overflow:auto}
 
   @media(max-width:900px){
     nav.links{display:none}
@@ -152,16 +155,22 @@
 </head>
 <body>
 
-<!-- ============ WELCOME (Anthony → Scott) ============ -->
+<!-- ============ WELCOME (Anthony → Scott) — the simple guide ============ -->
 <div class="welcome" id="welcome">
-  <div class="wcard">
+  <div class="wcard" style="max-width:600px">
     <button class="wclose" onclick="document.getElementById('welcome').classList.add('hide')" aria-label="Close">×</button>
-    <div class="eyebrow">A note before you look around</div>
-    <h2>Scott — this one's for you.</h2>
-    <p>We pledged together back in '98. All these years later I get to build things for a living, and I wanted to show you what your firm could run on.</p>
-    <p>This is a working preview of <b>McArthur Engineering</b> with a proper website out front and a full engineering operating system behind the sign-in — projects, submittals, calcs, the field log, billing, the works. Nothing here is public and nothing's been sent anywhere. It's just for your eyes first.</p>
-    <div class="sig">— Anthony</div>
-    <button class="btn primary go" onclick="document.getElementById('welcome').classList.add('hide')">Take a look →</button>
+    <div class="eyebrow">Scott — read this first. It takes 30 seconds.</div>
+    <h2>Hey brother. Here's how this works.</h2>
+
+    <div class="wstep"><span class="wnum">1</span><div><b>💻 Open this on a computer or laptop.</b><br>It works on a phone, but it's built to be seen on a big screen. Trust me.</div></div>
+    <div class="wstep"><span class="wnum">2</span><div><b>🌐 This page is your WEBSITE.</b><br>This is the public part — what your customers would see. New logo, The Arc featured, your whole team on it. Scroll down and look around.</div></div>
+    <div class="wstep"><span class="wnum">3</span><div><b>⚙️ The little gear (top right) is your OFFICE.</b><br>Click the gear, then press the one big button — <b>no password needed</b>. That takes you into your private operating system: every project, the money, the field log, the whole firm on one screen. Only you and your people would ever see it. It's secured, it's private, and it runs the business.</div></div>
+    <div class="wstep"><span class="wnum">4</span><div><b>❓ Inside, the round ? button is your MANUAL.</b><br>Click it anytime and it explains everything in plain English — every screen, every button. You can even type a question.</div></div>
+
+    <p style="margin-top:16px">Nothing here is public and nothing's been sent to anyone. This is a working preview, just for you. Your crew — Christian, Cameron, Foster, Angela — would each get their own sign-in with their own permissions. You'd see everything; they'd see their part.</p>
+    <div class="sig">— Anthony · we pledged in '98, and I build these now. This one's for you.</div>
+    <button class="btn primary go" onclick="document.getElementById('welcome').classList.add('hide')">Got it — show me the website →</button>
+    <a class="btn dark go" href="signin.html" style="margin-left:10px">Skip ahead to my Office ⚙ →</a>
   </div>
 </div>
 

@@ -564,3 +564,141 @@
   function boot(){ init(); setTimeout(init,200); setTimeout(init,600); setTimeout(init,1400); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 })();
+
+/* ── McArthur Owner's Manual — help panel on every OS page ──────────────────
+   Guide (search) + Ask (keyword matcher, honest — no AI freeform).
+   Round ? button bottom-LEFT (COO assistant owns bottom-right).
+   Support & documentation by Accelerated Experiences, LLC. */
+(function(){
+  if (typeof document==='undefined') return;
+  var MANCATS=[
+    {k:'start',label:'Start here',ic:'🚀'},{k:'work',label:'The work',ic:'📐'},
+    {k:'money',label:'The money',ic:'💵'},{k:'people',label:'People & org',ic:'👷'},
+    {k:'safe',label:'Private & safe',ic:'🔒'}
+  ];
+  var MANUAL=[
+   {c:'start',t:'What this is',g:'overview what is this office system os everything',
+    b:'This is your firm\'s operating system — the private side of McArthur Engineering. Every project, dollar, drawing set and person in one place. The public website is separate; customers never see any of this.'},
+   {c:'start',t:'The website vs. your Office',g:'website public marketing site difference two doors',
+    b:'Two doors, one building. The WEBSITE (the pretty page with The Arc on it) is public — that\'s what customers see. Your OFFICE (this) is private — you reach it through the little gear ⚙ on the website, and only your people can enter.'},
+   {c:'start',t:'How to get around',g:'navigate menu sidebar rooms move around find',
+    b:'The left sidebar is the whole building — every room is one click: Command Center, Calendar, Projects, Billing, and so on. On a phone, tap the ☰ button to open the same menu.'},
+   {c:'start',t:'The Command Center numbers, in English',g:'dashboard wip utilization multiplier realization backlog numbers mean',
+    b:'WIP = work you\'ve done but haven\'t billed yet (money sitting on the table). Utilization = how much of your people\'s time is on paying work. Multiplier = what a dollar of labor turns into as fee. Realization = how much of your fee you actually collect. All computed live from your own projects.'},
+   {c:'work',t:'Projects & the 30/60/90/100 phases',g:'projects phases percent milestones preliminary detailed ifc issued construction',
+    b:'Every job moves 30% → 60% → 90% → 100% (Issued for Construction) — the same way you already work. The Projects room shows each job\'s phase, percent complete, fee and earned value. The Arc sits on top.'},
+   {c:'work',t:'The field log — RFIs & submittals',g:'workflow field rfi submittal asi inspection construction log ball in court',
+    b:'The Module Workflow room is the construction-administration log: RFIs, submittals, ASIs and field reports, with who\'s holding the ball and for how long. Christian\'s home room.'},
+   {c:'work',t:'Calcs & standards',g:'calcs calculations standards codes aashto aci asce checks',
+    b:'The Calcs room tracks the calculation packages behind each job and which code they answer to (ASCE 7, ACI 318, AASHTO…). Each calc gets an independent check before it backs a sealed sheet.'},
+   {c:'work',t:'The PE Seal — the gate',g:'seal stamp pe sign issued for construction gate release',
+    b:'Nothing goes out the door as Issued-for-Construction until the engineer of record — you — seals it. The Seal room is that gate: what\'s waiting on your stamp and what it\'s waiting on.'},
+   {c:'work',t:'Permits & agencies',g:'permits ahj city county agency review approvals submittals',
+    b:'The Permits room tracks every agency submittal — who has it, how long they\'ve had it, and what\'s due back. No more "wait, did the county ever respond?"'},
+   {c:'work',t:'Your calendar — on your phone',g:'calendar subscribe google apple iphone reminders events',
+    b:'The Calendar room holds every date the firm runs on. Press Subscribe once and it lands on your iPhone/Google/Apple calendar with native reminders — deadlines follow you.'},
+   {c:'money',t:'Pursuits — go or no-go',g:'pursuits leads new business go no go chase work',
+    b:'Every prospective job gets a clear-eyed go/no-go before you spend hours on it: fee, odds, and fit, laid out so passing on a loser is easy.'},
+   {c:'money',t:'Proposals & fees',g:'proposals fee letter pricing percent construction lump sum hourly',
+    b:'Build fee proposals the way engineers actually price — % of construction, lump sum, or hourly NTE — and track which are out, won, or dead.'},
+   {c:'money',t:'Billing',g:'billing invoices ar aging collect paid',
+    b:'Invoices by project, what\'s been billed against each fee, and AR aging — who owes you and for how long. WIP on the dashboard is the work you haven\'t billed yet.'},
+   {c:'money',t:'Books & multipliers',g:'books margins multiplier overhead breakeven labor',
+    b:'The firm\'s financial spine: labor cost, overhead, the multiplier, and break-even — the same math Deltek and Zweig publish, computed live from your own jobs.'},
+   {c:'people',t:'Your crew & licenses',g:'hr people team pe license renewal pdh ce staff',
+    b:'HR · People Ops holds the crew — you, Christian, Cameron, Foster, Angela — plus PE license renewals and PDH hours so a lapse never sneaks up.'},
+   {c:'people',t:'Who sees what (privileges)',g:'privileges permissions roles sign in staff access employees accounts',
+    b:'When this runs for real, each person gets their own sign-in: you see everything; Christian gets projects and the field but not the books; Cameron gets drawings; Foster his assignments; Angela the front office. You set it, you change it, you can shut anyone\'s door instantly.'},
+   {c:'people',t:'The AI departments (the Org)',g:'org ai agents departments coo nova ledger seats',
+    b:'Under the hood is a staffed org of AI seats — departments with a head, a checker, and a pacemaker that won\'t release sloppy work. Nova is the COO seat that routes and packages; Ledger owns standards and the independent check. They draft; humans decide.'},
+   {c:'safe',t:'Is this private?',g:'private secure who can see safety data security',
+    b:'Yes. The website is public; the Office is not. In this preview, everything you type stays in your own browser and is never uploaded anywhere. The real version runs on secured accounts you control.'},
+   {c:'safe',t:'Can I break it?',g:'break undo mistake reset floor experiment try',
+    b:'No. Click anything, type anything, try everything. In this preview the floor resets itself when you leave — there\'s a "Reset the floor" link in the top bar if you want a clean slate. You cannot hurt it.'},
+   {c:'safe',t:'Nothing sends without you',g:'approvals send email publish spend money ghost',
+    b:'Anything that would leave the building — an email, an invoice, a filing — stops at the Approval Desk for a human OK first. The system drafts; the owner releases.'}
+  ];
+  var SYN={password:'sign in',login:'sign in',stamp:'seal',invoice:'billing',bill:'billing',
+    pay:'billing',schedule:'calendar',phone:'calendar subscribe',employee:'staff privileges',
+    crew:'staff people',rfi:'field workflow',cost:'money books',profit:'multiplier books',
+    website:'public marketing',secure:'private safe',help:'manual',manual:'what this is'};
+  function mesc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  var Q='',CAT='all';
+  function score(a,q){var w=q.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(function(x){return x.length>2;});
+    var s=0;w.forEach(function(t){var tt=SYN[t]?t+' '+SYN[t]:t;tt.split(' ').forEach(function(x){
+      if(a.t.toLowerCase().indexOf(x)>-1)s+=4;if(a.g.indexOf(x)>-1)s+=2;if(a.b.toLowerCase().indexOf(x)>-1)s+=1;});});return s;}
+  function guide(){var list=MANUAL.filter(function(a){return CAT==='all'||a.c===CAT;});
+    if(Q){list=list.map(function(a){return{a:a,s:score(a,Q)};}).filter(function(x){return x.s>0;})
+      .sort(function(x,y){return y.s-x.s;}).map(function(x){return x.a;});}
+    var el=document.getElementById('man-list');if(!el)return;
+    el.innerHTML=list.length?list.map(function(a){var c=MANCATS.filter(function(x){return x.k===a.c;})[0];
+      return '<details class="man-art"><summary>'+(c?c.ic+' ':'')+mesc(a.t)+'</summary><p>'+mesc(a.b)+'</p></details>';}).join('')
+      :'<p style="color:#8a8b82;font-size:13px;padding:8px 2px">Nothing matched — try different words, or ask below.</p>';}
+  function ask(q){var log=document.getElementById('man-log');if(!log||!q)return;
+    log.innerHTML+='<div class="man-me">'+mesc(q)+'</div>';
+    var hits=MANUAL.map(function(a){return{a:a,s:score(a,q)};}).filter(function(x){return x.s>0;}).sort(function(x,y){return y.s-x.s;});
+    var html; if(hits.length){var top=hits[0].a;
+      html='<b>'+mesc(top.t)+'</b><br>'+mesc(top.b);
+      if(hits[1])html+='<br><span class="man-rel">Related: '+hits.slice(1,3).map(function(h){return mesc(h.a.t);}).join(' · ')+'</span>';
+    } else { html='I don\'t have that one yet — flip to the Guide tab and browse, or ask Anthony at Accelerated Experiences.'; }
+    log.innerHTML+='<div class="man-bot">'+html+'</div>'; log.scrollTop=log.scrollHeight;
+    var inp=document.getElementById('man-q'); if(inp) inp.value='';}
+  function build(){
+    if(document.getElementById('mca-man'))return;
+    var css=document.createElement('style');
+    css.textContent='#mca-help{position:fixed;left:18px;bottom:18px;z-index:9000;width:52px;height:52px;border-radius:50%;background:#1a2b3a;color:#f2b352;font-size:24px;font-weight:700;border:2px solid #f2b352;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,.35)}'
+     +'#mca-man{position:fixed;inset:0;z-index:9500;display:none}#mca-man.on{display:block}'
+     +'#mca-man .scr{position:absolute;inset:0;background:rgba(16,26,36,.55)}'
+     +'#mca-man .pan{position:absolute;top:0;right:0;height:100%;width:min(468px,100%);background:#f7f5f0;box-shadow:-14px 0 50px rgba(0,0,0,.35);display:flex;flex-direction:column;font-family:"IBM Plex Sans",system-ui,sans-serif}'
+     +'#mca-man .hd{background:linear-gradient(160deg,#1a2b3a,#2c4258);color:#fff;padding:18px 20px 14px}'
+     +'#mca-man .hd b{font-size:17px}#mca-man .hd .x{float:right;background:none;border:none;color:#f2b352;font-size:22px;cursor:pointer}'
+     +'#mca-man .tabs{display:flex;gap:8px;margin-top:10px}'
+     +'#mca-man .tabs button{flex:1;border:none;border-radius:8px;padding:8px;font-weight:600;cursor:pointer;background:rgba(255,255,255,.12);color:#cfe0ef}'
+     +'#mca-man .tabs button.on{background:#f2b352;color:#241a08}'
+     +'#mca-man .bd{flex:1;overflow:auto;padding:14px 16px}'
+     +'#mca-man input{width:100%;border:1px solid #d8d5c7;border-radius:9px;padding:10px 12px;font:inherit;box-sizing:border-box}'
+     +'#mca-man .chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}'
+     +'#mca-man .chips button{border:1px solid #d8d5c7;background:#fff;border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer}'
+     +'#mca-man .chips button.on{background:#1a2b3a;color:#fff;border-color:#1a2b3a}'
+     +'.man-art{background:#fff;border:1px solid #e4e0d7;border-radius:11px;padding:11px 14px;margin:8px 0}'
+     +'.man-art summary{font-weight:600;cursor:pointer;font-size:14px}.man-art p{font-size:13.5px;color:#454c50;margin:8px 0 2px;line-height:1.55}'
+     +'#man-log{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}'
+     +'.man-me{align-self:flex-end;background:#1a2b3a;color:#fff;border-radius:12px 12px 2px 12px;padding:8px 12px;font-size:13.5px;max-width:85%}'
+     +'.man-bot{align-self:flex-start;background:#fff;border:1px solid #e4e0d7;border-radius:12px 12px 12px 2px;padding:9px 12px;font-size:13.5px;max-width:90%;line-height:1.5}'
+     +'.man-rel{font-size:12px;color:#8a8b82}'
+     +'#mca-man .ft{border-top:1px solid #e4e0d7;padding:9px 16px;font-size:11px;color:#8a8b82;text-align:center}';
+    document.head.appendChild(css);
+    var b=document.createElement('button');b.id='mca-help';b.title='Owner\'s Manual';b.textContent='?';document.body.appendChild(b);
+    var m=document.createElement('div');m.id='mca-man';
+    m.innerHTML='<div class="scr"></div><div class="pan">'
+     +'<div class="hd"><button class="x">×</button><b>❓ Owner\'s Manual</b><div style="font-size:12px;color:#cfe0ef;margin-top:2px">Every screen, explained in plain English.</div>'
+     +'<div class="tabs"><button id="man-tg" class="on">📖 The Guide</button><button id="man-ta">💬 Ask a question</button></div></div>'
+     +'<div class="bd" id="man-guide"><input id="man-s" placeholder="Search the manual… (try: billing, seal, calendar)">'
+     +'<div class="chips" id="man-chips"></div><div id="man-list"></div></div>'
+     +'<div class="bd" id="man-askv" style="display:none"><div id="man-log"><div class="man-bot">Hey Scott — ask me anything about this system. Try one of these:</div></div>'
+     +'<div class="chips"><button class="man-sug">What is this?</button><button class="man-sug">Who can see my stuff?</button><button class="man-sug">How does billing work?</button><button class="man-sug">Can I break it?</button></div>'
+     +'<input id="man-q" placeholder="Type a question and press Enter…"></div>'
+     +'<div class="ft">Support &amp; documentation by Accelerated Experiences, LLC</div></div>';
+    document.body.appendChild(m);
+    var chips=document.getElementById('man-chips');
+    chips.innerHTML='<button data-c="all" class="on">All</button>'+MANCATS.map(function(c){return '<button data-c="'+c.k+'">'+c.ic+' '+c.label+'</button>';}).join('');
+    chips.onclick=function(e){var t=e.target.closest('button');if(!t)return;CAT=t.getAttribute('data-c');
+      Array.prototype.forEach.call(chips.children,function(x){x.classList.toggle('on',x===t);});guide();};
+    document.getElementById('man-s').oninput=function(e){Q=e.target.value;guide();};
+    b.onclick=function(){m.classList.add('on');guide();};
+    m.querySelector('.scr').onclick=function(){m.classList.remove('on');};
+    m.querySelector('.x').onclick=function(){m.classList.remove('on');};
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')m.classList.remove('on');});
+    document.getElementById('man-tg').onclick=function(){tab(true);};
+    document.getElementById('man-ta').onclick=function(){tab(false);};
+    function tab(g){document.getElementById('man-guide').style.display=g?'':'none';
+      document.getElementById('man-askv').style.display=g?'none':'';
+      document.getElementById('man-tg').classList.toggle('on',g);
+      document.getElementById('man-ta').classList.toggle('on',!g);}
+    document.getElementById('man-q').addEventListener('keydown',function(e){if(e.key==='Enter')ask(e.target.value.trim());});
+    m.querySelector('#man-askv').addEventListener('click',function(e){var s=e.target.closest('.man-sug');if(s){tab(false);ask(s.textContent);}});
+    guide();
+  }
+  // only on OS pages (they load this engine); skip if body missing
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+})();
