@@ -336,18 +336,7 @@
     var mo=Math.max(0,t.mo+addMo-offMo), build=Math.max(0,t.build+addBuild-offBuild);
     return { tier:t, rooms:rooms, adds:adds, offs:offs, mo:mo, build:build, addMo:addMo, offMo:offMo, addBuild:addBuild, offBuild:offBuild, alaMo:alaMo, alaBuild:alaBuild, platformMo:Math.max(0,mo-alaMo), savingMo:Math.max(0,alaMo-mo), changed:adds.length>0||offs.length>0 };
   }
-  function priceLabel() { var p=priceNow(); return money(p.mo)+"/mo · "+money(p.build)+" build"; }
-
-  /* -------------------------------------------------------------- view helpers */
-  function el(html) { var t=document.createElement("template"); t.innerHTML=String(html).trim(); return t.content.firstChild; }
-  function esc(s) { return String(s==null?"":s).replace(/[&<>"']/g, function (c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
-  function money(n){ return "$"+(Math.round(Number(n)||0)).toLocaleString(); }
-  function pct(n, dp){ return (Number(n)||0).toFixed(dp===undefined?0:dp)+"%"; }
-
-  function brandMark() {
-    return '<img src="mca-mark.svg" alt="McArthur Engineering" onerror="this.style.display=\'none\';this.parentNode.classList.add(\'fallback\')">' +
-      '<svg class="fallback-mark" viewBox="0 0 32 32" width="24" height="24" style="display:none" aria-hidden="true"><g fill="none" stroke="#eaf6f9" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M3 25 L16 6 L29 25 Z"/><path d="M3 25 L16 16 L29 25"/><path d="M16 6 L16 16"/></g></svg>';
-  }
+  function priceLabel() { var t=TIERS[db().tier]||TIERS.grandsuite; return t.name+" · every department on"; }
 
   function renderShell(active) {
     var side = document.createElement("aside"); side.className = "sidebar";
@@ -393,8 +382,8 @@
     setTimeout(function () { var pill=document.getElementById("tierPill"); if (pill) pill.addEventListener("click", function (e){ e.stopPropagation(); menu.classList.toggle("open"); }); document.addEventListener("click", function (){ menu.classList.remove("open"); }); }, 0);
     var frag = document.createDocumentFragment(); frag.appendChild(bar); frag.appendChild(menu); return frag;
   }
-  function ribbon() { return el('<div class="ribbon"><span class="live">LIVE SHOWROOM</span> — this is the real OS, not a slideshow. Everything you type stays in your browser and resets when you leave. <a href="javascript:void(0)" id="resetFloor">Reset the floor</a></div>'); }
-  function footer() { return el('<div class="ae-credit">Powered by <b>Accelerated Experiences LLC</b> · McArthur Engineering is a white-label build. Demo data is a fictional firm; benchmark figures are sourced and tagged.</div>'); }
+  function ribbon() { return el('<div class="ribbon"><span class="live">McARTHUR OS · PRIVATE PREVIEW</span> — your real system, running in your browser. Everything you type stays on this machine and resets when you leave. <a href="javascript:void(0)" id="resetFloor">Reset the floor</a></div>'); }
+  function footer() { return el('<div class="ae-credit">Built for <b>McArthur Engineering</b> by Accelerated Experiences LLC · The team and The Arc are real; operational figures in this preview are sample data, benchmarks sourced and tagged.</div>'); }
 
   function mount(opts) {
     opts = opts || {}; db();
@@ -506,21 +495,31 @@
     function kb(q){
       q=(q||'').toLowerCase();
       function m(){for(var i=0;i<arguments.length;i++){if(q.indexOf(arguments[i])>=0)return true;}return false;}
-      if(m('agent org','organization','who runs','who is','the seats','how the org','the org','deliberat','confidence bar','ghost mode','deepseek','ai org','how does the ai','the departments do'))
-        return 'This OS runs on a '+nd+'-department AI agent organization, and I’m '+coo.name+', the COO. You ask; I route it to exactly one department, let its five-seat chain — a head, an admin exec, a pacemaker, and two opposing lenses that never confer — work it under its own confidence bar, then bring you one clean answer with its reasons. Money and compliance calls hold a higher 85% bar and come to you if they aren’t certain. Nothing here acts on its own — that’s Ghost Mode; anything that would send, spend or sign is staged on the Approval Desk. The real engine runs server-side on DeepSeek; this showroom is a faithful local stand-in.';
-      if(m('price','pricing','cost','how much','what do you charge','tier','plan','package','per month','/mo','subscription','quote','expensive')){
-        var ts=Object.keys(ENG.TIERS).map(function(k){return ENG.TIERS[k];}).sort(function(a,b){return (a.mo||0)-(b.mo||0);});
-        var lines=ts.map(function(t){return '• '+t.name+' — '+money(t.mo)+'/mo + '+money(t.build)+' one-time build'+(t.desc?': '+t.desc:'');}).join('\n');
-        return 'Here are the packages:\n\n'+lines+'\n\nEvery department is also priced on its own, so you can add or drop any one and the price moves with it — tap the tier chip at the top to configure it live. Draft pricing; Accelerated Experiences LLC sets the final number.';
-      }
-      if(m('custom','white label','white-label','brand','skin','tailor','our own','add a department','add department','remove a','turn off','turn on','configure','make it fit','our data')){
-        var rs=Object.keys(ENG.ROOMS).slice(0,4).map(function(k){return ENG.ROOMS[k].label;}).join(', ');
-        return 'It’s fully white-label: your brand, your colors, your departments, and your own data seeded in. Start from a package, then add or take off any department — like '+rs+' — so the build fits your business instead of the other way around. Tap the tier chip at the top to switch departments on and off and watch the price move in real time.';
-      }
-      if(m('what is this','what does it do','what can you do','what can it do','how does it work','is this real','is it real','showroom','slideshow','a demo','real app'))
-        return 'This is the real OS, running right here in your browser — not a slideshow. Everything you type stays in this tab and resets when you leave. It’s your whole operation as one system, with a '+nd+'-department AI org underneath it. In the live product it runs on a server with your real data; nothing in this showroom sends, spends or signs — anything that would is staged on the Approval Desk for you. Ask me about the org, pricing, or how to customize it — or ask an operational question and I’ll route it to the right department.';
+      function money2(n){ n=Math.round(n||0); return '$'+String(n).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+      var d=ENG.db();
+      if(m('the arc','arc doing','post falls')){
+        var arc=d.projects.filter(function(p){return p.name.indexOf('The Arc')===0;})[0];
+        if(arc){ var earned=ENG.earnedToDate?ENG.earnedToDate(arc):0;
+          return 'The Arc '+String.fromCharCode(8212)+' Post Falls: '+arc.pctComplete+'% complete, phase '+arc.phase+'. Fee '+money2(arc.fee)+', earned to date '+money2(earned)+', billed '+money2(arc.billed)+' '+String.fromCharCode(8212)+' so about '+money2(earned-arc.billed)+' is earned but not yet invoiced. Lead: '+arc.lead+'. Open the Projects room for the full spine.'; } }
+      if(m('money','cash','billing','invoice','owed','receivable','unbilled','wip','revenue','collect')){
+        var fee=0,billed=0,earned=0; d.projects.forEach(function(p){fee+=p.fee||0;billed+=p.billed||0;earned+=(ENG.earnedToDate?ENG.earnedToDate(p):0);});
+        var un=(d.invoices||[]).filter(function(i){return !i.paid&&!/paid/i.test(i.status||'');}).length;
+        return 'The money right now: '+money2(fee)+' of fee under contract, '+money2(earned)+' earned, '+money2(billed)+' billed '+String.fromCharCode(8212)+' which leaves about '+money2(Math.max(0,earned-billed))+' of finished work not yet invoiced (that is your WIP). '+un+' invoice(s) are out and open. Billing and Books have the line-by-line.';}
+      if(m('team','who works','staff','crew','christian','cameron','foster','angela','employees')){
+        var hs=d.team.filter(function(t){return t.type==='Human';}).map(function(t){return t.name.split(' ')[0]+' ('+t.role.split('/')[0].trim()+')';});
+        return 'The crew: '+hs.join(', ')+'. Each gets their own sign-in with their own permissions '+String.fromCharCode(8212)+' Scott sees everything, everyone else sees their part. HR '+String.fromCharCode(183)+' People Ops has licenses and details.';}
+      if(m('attention','needs me','waiting','approve','approval','on my desk','to do','priorities')){
+        var ap=(d.approvals||[]);
+        var unsealed=d.projects.filter(function(p){return p.phase==='P100'&&!p.sealed;}).length;
+        return 'On your desk: '+ap.length+' item(s) at the Approval Desk'+(unsealed?(' and '+unsealed+' finished package(s) waiting on your PE seal'):'')+'. Nothing sends, spends or signs without you '+String.fromCharCode(8212)+' that is the standing rule. Open Approval Desk to release or hold each one.';}
+      if(m('office','address','phone','hours','contact','where are'))
+        return 'McArthur Engineering Company LLC '+String.fromCharCode(183)+' 14841 Idaho 41, Rathdrum, ID '+String.fromCharCode(183)+' (208) 446-3307 '+String.fromCharCode(183)+' admin@mcarthur-eng.com '+String.fromCharCode(183)+' Mon'+String.fromCharCode(8211)+'Fri 8:00'+String.fromCharCode(8211)+'4:30.';
+      if(m('agent org','organization','the seats','how the org','the org','deliberat','confidence bar','ghost mode','deepseek','ai org','how does the ai','departments do'))
+        return 'Under the hood this firm runs a '+nd+'-department organization and I'+String.fromCharCode(8217)+'m '+coo.name+', the COO. Ask me anything; I route it to exactly one department, its five-seat chain works it under a confidence bar, and I bring you one clean answer with reasons. Money and compliance hold a higher 85% bar and come to Scott if uncertain. Nothing acts on its own '+String.fromCharCode(8212)+' anything that would send, spend or sign stops at the Approval Desk.';
+      if(m('what is this','what does it do','how does it work','is this real','a demo','real app','what can you do','what can it do'))
+        return 'This is McArthur Engineering'+String.fromCharCode(8217)+'s operating system '+String.fromCharCode(8212)+' the whole firm on one spine: projects, the field log, calcs, the seal gate, permits, billing and the books, all computed from the same data. In this private preview it runs entirely in your browser and resets when you leave; the full version runs on secured accounts with your real files. Ask me about The Arc, the money, the team, or what needs your attention.';
       if(m('who are you','your name','what are you'))
-        return 'I’m '+coo.name+' — the Chief Operating Officer of this OS. I’m the one seat between you and a '+nd+'-department AI org: I take your question, route it, and bring back a clean answer. Ask me how the system works, what it costs, how to customize it, or anything operational.';
+        return 'I'+String.fromCharCode(8217)+'m '+coo.name+' '+String.fromCharCode(8212)+' McArthur Engineering'+String.fromCharCode(8217)+'s Chief Operating Officer seat. I sit between Scott and the departments: I take the question, route it, and bring back one answer. Try '+String.fromCharCode(8220)+'How is The Arc doing?'+String.fromCharCode(8221)+' or '+String.fromCharCode(8220)+'What needs my attention?'+String.fromCharCode(8221);
       return null;
     }
 
@@ -528,10 +527,10 @@
     fab.innerHTML='<span class="lbl">Ask '+esc(coo.name)+'</span>◎';
     document.body.appendChild(fab);
 
-    var samples=['What’s the agent org?','How much does it cost?','Can I customize it?','What needs my attention?'];
+    var samples=['What needs my attention?','How is The Arc doing?','Where is the money right now?','Who is on the team?'];
     var panel=document.createElement('div'); panel.id='aeCooPanel';
     panel.innerHTML=
-      '<div class="aecoo-head"><div class="av">'+esc(coo.name.charAt(0))+'</div><div><b>'+esc(coo.name)+'</b><div class="r">'+esc(coo.role)+' · agent org + concierge</div></div><button class="aecoo-x" aria-label="Close">×</button></div>'+
+      '<div class="aecoo-head"><div class="av">'+esc(coo.name.charAt(0))+'</div><div><b>'+esc(coo.name)+'</b><div class="r">'+esc(coo.role)+' · McArthur Engineering</div></div><button class="aecoo-x" aria-label="Close">×</button></div>'+
       '<div class="aecoo-msgs" id="aeCooMsgs"></div>'+
       '<div class="aecoo-foot"><div class="aecoo-samples">'+samples.map(function(s){return '<span class="aecoo-chip">'+esc(s)+'</span>';}).join('')+'</div>'+
       '<div class="aecoo-inrow"><input class="aecoo-in" id="aeCooIn" placeholder="Ask '+esc(coo.name)+' anything…"><button class="aecoo-send" id="aeCooSend">Ask</button></div></div>';
@@ -539,7 +538,7 @@
 
     var msgs=panel.querySelector('#aeCooMsgs'), input=panel.querySelector('#aeCooIn');
     function bubble(cls,html){ var b=document.createElement('div'); b.className='aecoo-b '+cls; b.innerHTML=html; msgs.appendChild(b); msgs.scrollTop=msgs.scrollHeight; return b; }
-    bubble('coo','Hi — I’m '+esc(coo.name)+', your COO. I can explain the agent org, what the system does, how to customize it and what it costs — or take an operational question and route it to the right department. What do you need?');
+    bubble('coo','Morning '+esc('Scott')+' — I’m '+esc(coo.name)+', your COO. I can tell you how The Arc is tracking, where the money sits, who’s carrying what, and what’s waiting on your desk — or ask me anything and I’ll route it to the right department.');
     function ask(q){
       q=(q||'').trim(); if(!q){ input.focus(); return; }
       bubble('you',esc(q)); input.value='';
