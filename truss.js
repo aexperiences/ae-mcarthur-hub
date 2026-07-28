@@ -205,7 +205,7 @@
     grandsuite: { key:"grandsuite", name:"Grandsuite", rank:3, mo:2900, build:24000, desc:"The whole firm, nothing held back. Every department, the full agent org, the Modules engine, and contracts.", base:"Multi-office · unlimited seats · dedicated environment · data migration", includes:["pursuits","proposals","projects","workflow","calcs","billing","seal","permits","modules","books","hr","it","law","org"] }
   };
   var DEPTS = [
-    { group:"Command", items:[ { href:"dashboard.html", label:"Command Center", ic:"◎" }, { href:"calendar.html", label:"Calendar", ic:"▤" }, { href:"approvals.html", label:"Approval Desk", ic:"✓", accent:"ops" } ]},
+    { group:"Command", items:[ { href:"dashboard.html", label:"Command Center", ic:"◎" }, { href:"calendar.html", label:"Calendar", ic:"▤"}, { href:"contacts.html", label:"Contacts", ic:"☎" }, { href:"approvals.html", label:"Approval Desk", ic:"✓", accent:"ops" } ]},
     { group:"The Engine", items:[ { href:"modules.html", label:"Modules · The Engine", ic:"❖", room:"modules", accent:"modules" } ]},
     { group:"New Business", items:[ { href:"pursuits.html", label:"Pursuits · Go/No-Go", ic:"◆", room:"pursuits", accent:"pursuits" }, { href:"proposals.html", label:"Proposals & Fees", ic:"∑", room:"proposals", accent:"proposal" } ]},
     { group:"The Work", items:[ { href:"projects.html", label:"Projects · WBS", ic:"▦", room:"projects", accent:"projects" }, { href:"workflow.html", label:"Module Workflow", ic:"⇄", room:"workflow", accent:"field" }, { href:"calcs.html", label:"Calcs & Standards", ic:"§", room:"calcs", accent:"calcs" }, { href:"seal.html", label:"PE Seal · IFC", ic:"⊛", room:"seal", accent:"seal" }, { href:"permits.html", label:"Permits & AHJ", ic:"⇋", room:"permits", accent:"permits" } ]},
@@ -621,6 +621,8 @@
     b:'When this runs for real, each person gets their own sign-in: you see everything; Christian gets projects and the field but not the books; Cameron gets drawings; Foster his assignments; Angela the front office. You set it, you change it, you can shut anyone\'s door instantly.'},
    {c:'people',t:'The AI departments (the Org)',g:'org ai agents departments coo nova ledger seats',
     b:'Under the hood is a staffed org of AI seats — departments with a head, a checker, and a pacemaker that won\'t release sloppy work. Nova is the COO seat that routes and packages; Ledger owns standards and the independent check. They draft; humans decide.'},
+   {c:'people',t:'Contacts — the Kootenai book',g:'contacts phone numbers businesses directory kootenai call book import csv',
+    b:'The Contacts room is the firm\'s book of Kootenai County businesses and practitioners — search it, filter by category or city, tap a row to call or open their site. Import a bigger CSV any time; export takes the whole book back out.'},
    {c:'safe',t:'Is this private?',g:'private secure who can see safety data security',
     b:'Yes. The website is public; the Office is not. In this preview, everything you type stays in your own browser and is never uploaded anywhere. The real version runs on secured accounts you control.'},
    {c:'safe',t:'Can I break it?',g:'break undo mistake reset floor experiment try',
