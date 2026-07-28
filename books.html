@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Books & Multipliers · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"books.html", crumb:"Books & Multipliers" }), d = T.db();
+  function fmtVal(k){ var v=k.value; if(k.fmt==="pct")return T.pct(v); if(k.fmt==="x")return (Number(v)||0).toFixed(2)+"x"; if(k.fmt==="mo")return (Number(v)||0).toFixed(1)+" mo"; if(k.fmt==="days")return Math.round(v)+" d"; if(k.fmt==="money")return T.money(v); return v; }
+  c.appendChild(T.page("Books & Multipliers","Utilization, net multiplier, realization, backlog, AR and WIP — computed from the firm's own labor and projects, not reconstructed at month end. The multiplier is the whole game."));
+  var kp = T.kpis();
+  c.appendChild(T.card('<h2>The multiplier board</h2><div class="statrow">'+kp.map(function(k){return T.stat(k.label,fmtVal(k),(k.bench&&k.bench.target)?("target "+k.bench.target[0]+"–"+k.bench.target[1]+(k.bench.unit||"")):"",k.band);}).join("")+'</div>'+
+    '<div class="srcnote">'+T.esc(T.BENCH.netMultiplier.src)+' · '+T.esc(T.BENCH.utilization.src)+'. Bands are targets, not guarantees.</div>'));
+  c.appendChild(T.card('<h2>Labor · what drives the multiplier</h2><table><thead><tr><th>Name</th><th>Role</th><th class="num">Rate</th><th class="num">Hours</th><th class="num">Billable</th><th style="width:120px">Utilization</th></tr></thead><tbody>'+
+    d.labor.map(function(l){var u=l.hours?Math.round(l.billable/l.hours*100):0;return '<tr><td class="t-main">'+T.esc(l.name)+'</td><td>'+T.esc(l.role)+'</td><td class="num">'+(l.rate?"$"+l.rate:"—")+'</td><td class="num">'+l.hours+'</td><td class="num">'+l.billable+'</td><td><div class="bar"><i style="width:'+u+'%"></i></div><span class="muted small">'+u+'%</span></td></tr>';}).join("")+'</tbody></table>'));
+  c.appendChild(T.card('<h2>What McArthur Engineering replaces</h2><div class="card-sub">The "worth" argument — one engine instead of the stack.</div><table><thead><tr><th>Tool today</th><th>What it does</th><th>Roughly</th></tr></thead><tbody>'+
+    T.REPLACES.map(function(r){return '<tr><td class="t-main">'+T.esc(r.tool)+'</td><td>'+T.esc(r.job)+'</td><td class="small muted">'+T.esc(r.cost)+'</td></tr>';}).join("")+'</tbody></table>'));
+})();
+</script></body></html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Org · Event Bus · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"org.html", crumb:"Agent Org · Event Bus" });
+  var COO = T.SEATS.coo, DEPTS = T.SEATS.depts;
+  function byKey(k){ return DEPTS.filter(function(x){return x.key===k;})[0]; }
+
+  c.appendChild(T.page("Agent Org · Event Bus","Ten departments, each a five-seat chain, all of it visible. Nova routes and gates at the top. Every hop underneath her is published to the bus in the open — including the ones that get held back.",
+    '<button class="btn blue sm" id="toNova">Ask Nova</button>'));
+
+  c.appendChild(T.card('<h2>What is actually running on this page</h2><div class="card-sub">Said plainly, before anything below it.</div>'+
+    '<div class="fence"><b>The brain on this page is a deterministic local stand-in.</b> This showroom is browser-only: no server, no API key, no model call. Every stance, confidence figure and reason is computed by fixed code from this tab\'s own seeded data, so the same question always returns the same answer.<br><br><b>The real engine runs server-side on DeepSeek.</b> Same chain, same seats, same gates, same Output Contract — with a language model in the seats instead of a stand-in. What the showroom is faithful about is the <i>structure</i>: who talks to whom, what gets held back, and what a released conclusion has to carry.</div>'+
+    '<div class="divider"></div><div class="row">'+T.tag("local stand-in brain","ghost")+T.tag("server-side engine: DeepSeek","ghost")+T.tag("deterministic","ghost")+T.tag("session-only, resets when you leave","ghost")+T.tag("Ghost Mode: nothing sends, spends or seals","watch")+'</div>'));
+
+  var novaSamples = ["Which pursuits should we actually chase?","What is sitting in our court on the field log?","Are we billing everything we've earned?","What's ready for a seal?","Is anyone's PE license about to lapse?"];
+  c.appendChild(T.card('<div class="between"><div><h2>'+T.esc(COO.name)+' · '+T.esc(COO.role)+'</h2><div class="card-sub">'+T.esc(COO.line)+'</div></div><div class="row">'+T.tag(COO.tier,"watch")+T.tag(COO.dept,"ghost")+'</div></div>'+
+    '<div class="grid g2"><div><table><thead><tr><th>Nova does</th></tr></thead><tbody><tr><td>Takes the ask off the principal\'s desk and reads it.</td></tr><tr><td>Routes it to exactly one department chain — never two at once.</td></tr><tr><td>Lets that chain work under <i>its own</i> confidence bar.</td></tr><tr><td>Packages one clean answer back up, reasons attached.</td></tr><tr><td>Sets the follow-up when something is held.</td></tr></tbody></table></div>'+
+    '<div><table><thead><tr><th>Nova does not</th></tr></thead><tbody><tr><td>Do the department\'s work. She never designs, prices or seals.</td></tr><tr><td>Overrule a Pacemaker. If the chain held it, it stays held.</td></tr><tr><td>Invent a number. An unsourced figure is tagged an assumption or dropped.</td></tr><tr><td>Send, spend or seal. Those are Fences — they go to the Approval Desk.</td></tr><tr><td>Reach the principal for anything the org can honestly clear itself.</td></tr></tbody></table></div></div>'+
+    '<div class="divider"></div><div class="row" style="margin-bottom:12px"><input id="qnova" placeholder="Ask the COO anything — she routes it to the right chain." style="flex:1;min-width:260px"><button class="btn blue" id="gonova">Route it</button></div>'+
+    '<div class="row" style="gap:6px;margin-bottom:4px">'+novaSamples.map(function(s){return '<button class="btn ghost sm exq" data-q="'+T.esc(s)+'">'+T.esc(s)+'</button>';}).join("")+'</div><div id="outnova"></div>'));
+
+  var seatCount = DEPTS.length*5+1, g85 = DEPTS.filter(function(d){return d.gate===85;});
+  c.appendChild(T.card('<div class="between"><div><h2>The chain, top to bottom</h2><div class="card-sub">Principal → COO → DH → AE → Event Bus → Pacemaker → Triad. A conclusion can\'t skip a rung, and every rung leaves a record.</div></div><div>'+T.tag(T.money(T.ROOMS.org.mo)+"/mo · "+T.money(T.ROOMS.org.build)+" build · draft","ghost")+'</div></div>'+
+    '<div class="statrow" style="margin-bottom:6px">'+T.stat("Departments",DEPTS.length,"each a five-seat chain")+T.stat("Seats in the org",seatCount,(DEPTS.length*5)+" department seats + the COO")+T.stat("Bar at 85%",g85.length,g85.map(function(d){return d.name.split(" · ")[0];}).join(" and ")+" — a bluffed number or contract read is worse than an honest 'unsure'","watch")+'</div>'));
+
+  var SAMPLE = { pursuits:"Which pursuits are worth a principal's week?", design:"What has to go out the door first?", field:"What's sitting in our court on the field log?", money:"Are we billing everything we've earned?", standards:"What's ready for a seal?", permits:"Where are we with the agencies?", hr:"Is anyone's PE license about to lapse?", it:"Anything on the system watch list?", law:"Which matters need a real attorney?", ops:"Where's the bottleneck right now?" };
+  function seatRows(dp){ return [{k:"DH",n:dp.dh.name,l:dp.dh.line},{k:"AE",n:dp.ae.name,l:dp.ae.line},{k:"Pacemaker",n:dp.pace.name,l:dp.pace.line},{k:"Lens A",n:dp.lensA.name,l:dp.lensA.line},{k:"Lens B",n:dp.lensB.name,l:dp.lensB.line}].map(function(s){return '<tr><td class="k">'+T.esc(s.k)+'</td><td><div class="t-main">'+T.esc(s.n)+'</div><div class="t-sub">'+T.esc(s.l)+'</div></td></tr>';}).join(""); }
+  var grid = document.createElement("div"); grid.className = "grid g2";
+  DEPTS.forEach(function (dp) {
+    var inner = '<div class="between"><div><h2>'+T.esc(dp.name)+'</h2><div class="card-sub">'+T.esc(dp.dh.name)+' → '+T.esc(dp.ae.name)+' → the bus → '+T.esc(dp.pace.name)+' → '+T.esc(dp.lensA.name)+' / '+T.esc(dp.lensB.name)+'</div></div><div>'+T.tag("bar "+dp.gate+"%",dp.gate>80?"watch":"ghost")+'</div></div>'+
+      '<table><thead><tr><th>Seat</th><th>Who, and what they own</th></tr></thead><tbody>'+seatRows(dp)+'</tbody></table>'+
+      '<div class="divider"></div><div class="row"><input id="q_'+dp.key+'" placeholder="'+T.esc(SAMPLE[dp.key]||"Ask this department")+'" style="flex:1;min-width:200px"><button class="btn sm" data-consult="'+dp.key+'">Consult</button></div><div id="out_'+dp.key+'"></div>';
+    var cardEl = T.card(inner); cardEl.style.borderLeft = "3px solid var(--a-"+dp.accent+")"; grid.appendChild(cardEl);
+  });
+  c.appendChild(grid);
+
+  c.appendChild(T.card('<div class="between"><div><h2>Live event bus</h2><div class="card-sub">Every hop of every consult on this page, newest last. Read it top to bottom and watch the SSOT get read, the AE package the ask, both lenses argue, and the Pacemaker release or hold. Nothing moves off this bus.</div></div><div class="row" style="flex:none;flex-wrap:nowrap"><button class="btn ghost sm" id="busRefresh">Refresh</button><button class="btn ghost sm" id="busClear">Clear</button></div></div>'+
+    '<div id="busbox" class="bus" style="max-height:520px;overflow-y:auto"></div><div class="divider"></div>'+
+    '<div class="fence"><b>Ghost Mode.</b> A released conclusion is a conclusion, not an action. Nothing here has sent, spent, sealed or published — anything that would goes to the Approval Desk. <a href="approvals.html">Open the desk →</a></div>'));
+
+  function contractHTML(dp,v,passed,head,topic,routedBy){ var pv=Math.max(0,Math.min(100,Number(v.conf)||0));
+    return '<div class="divider"></div><div class="'+(passed?"busrow conclude":"busrow reject")+'" style="display:block"><div class="bus-topic">'+T.esc(topic)+'</div><div class="bus-from"><b>'+T.esc(dp.pace.name)+'</b> (Pacemaker) → '+T.esc(passed?dp.ae.name+" (AE) → "+COO.name+" (COO)":COO.name+" (COO) → the Principal")+'</div><div class="bus-body" style="margin-top:5px">'+T.esc(head)+'</div></div>'+
+      '<div class="conf"><span class="muted small">'+T.esc(dp.name)+' · bar '+dp.gate+'%</span><span class="conf-bar"><i class="conf-fill '+(passed?'':'under')+'" style="width:'+pv+'%"></i><span class="conf-gate" style="left:'+dp.gate+'%"></span></span><span class="conf-n">'+T.esc(v.conf)+'%</span><span class="muted small">'+(passed?"released":"held — needs a human")+'</span></div>'+
+      '<ul class="reasons">'+v.reasons.map(function(x){return '<li><span class="rtag '+T.esc(x.t)+'">'+T.esc(x.t.toUpperCase())+'</span><span>'+T.esc(x.s)+'</span></li>';}).join("")+'</ul>'+
+      '<div class="srcnote">'+T.esc(routedBy)+' Routed through '+T.esc(dp.dh.name)+' (DH) → '+T.esc(dp.ae.name)+' (AE) → the bus → '+T.esc(dp.pace.name)+' (Pacemaker) → '+T.esc(dp.lensA.name)+' / '+T.esc(dp.lensB.name)+' (opposing lenses, which never confer). Full trace on the bus below.</div>'; }
+  function busRowHTML(e){ var cls=e.kind==="conclude"?"busrow conclude":(e.kind==="reject"?"busrow reject":"busrow"); var meter="";
+    if(e.verdict&&e.gate){var passed=e.kind!=="reject";var pv=Math.max(0,Math.min(100,Number(e.verdict.conf)||0));meter='<div class="conf"><span class="muted small">bar '+T.esc(e.gate)+'%</span><span class="conf-bar"><i class="conf-fill '+(passed?'':'under')+'" style="width:'+pv+'%"></i><span class="conf-gate" style="left:'+T.esc(e.gate)+'%"></span></span><span class="conf-n">'+T.esc(e.verdict.conf)+'%</span></div>';}
+    return '<div class="'+cls+'"><div class="bus-t">'+T.esc(e.stamp||"")+'</div><div><div class="bus-topic">'+T.esc(e.topic)+'</div><div class="bus-from"><b>'+T.esc(e.from)+'</b> → '+T.esc(e.to)+'</div><div class="bus-body">'+T.esc(e.body)+'</div>'+meter+'</div></div>'; }
+  function renderBus(){ var box=document.getElementById("busbox"); if(!box) return; var bus=T.db().bus||[]; if(!bus.length){box.innerHTML='<div class="empty">The bus is quiet. Ask Nova above, or consult a department — every hop lands here, oldest first, newest last.</div>';return;} box.innerHTML=bus.map(busRowHTML).join(""); box.scrollTop=box.scrollHeight; }
+  function runConsult(key){ var dp=byKey(key); if(!dp) return; var input=document.getElementById("q_"+key); var q=(input&&input.value.trim())||SAMPLE[key]||"Department review"; if(input)input.value=q; var r=T.consult(key,q); if(!r)return; var head=r.passed?r.verdict.stance:"Held below the "+dp.gate+"% bar at "+r.verdict.conf+"%. "+COO.name+" routes it up with the reasons attached rather than bluffing it. "+r.verdict.stance; document.getElementById("out_"+key).innerHTML=contractHTML(dp,r.verdict,r.passed,head,r.passed?(key+".pacemaker.released"):"escalation.below_bar","Consulted directly, without going through the COO."); renderBus(); T.toast(r.passed?dp.pace.name+" released at "+r.verdict.conf+"%.":dp.pace.name+" held it at "+r.verdict.conf+"% — escalated.","ok"); }
+  function askNova(q){ if(!q){T.toast("Type a question first.","");return;} var a=T.askNova(q); var dp=a.dept; document.getElementById("outnova").innerHTML=contractHTML(dp,a.result.verdict,a.result.passed,a.packaged,a.result.passed?"coo.released":"escalation.below_bar",COO.name+" read the ask and routed it to "+dp.name+" herself."); renderBus(); T.toast(COO.name+" routed it to "+dp.name+".","ok"); }
+  setTimeout(function(){ var q=document.getElementById("qnova");
+    document.getElementById("gonova").addEventListener("click",function(){askNova(q.value.trim());});
+    q.addEventListener("keydown",function(e){if(e.key==="Enter")askNova(this.value.trim());});
+    Array.prototype.forEach.call(document.querySelectorAll(".exq"),function(b){b.addEventListener("click",function(){q.value=this.dataset.q;askNova(this.dataset.q);});});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-consult]"),function(b){b.addEventListener("click",function(){runConsult(this.dataset.consult);});});
+    Array.prototype.forEach.call(document.querySelectorAll('[id^="q_"]'),function(i){i.addEventListener("keydown",function(e){if(e.key==="Enter")runConsult(this.id.slice(2));});});
+    document.getElementById("busRefresh").addEventListener("click",function(){renderBus();T.toast((T.db().bus||[]).length+" events on the bus.","ok");});
+    document.getElementById("busClear").addEventListener("click",function(){T.save(function(d){d.bus=[];});renderBus();T.toast("Bus cleared.","ok");});
+    var t=document.getElementById("toNova"); if(t)t.addEventListener("click",function(){if(q.scrollIntoView)q.scrollIntoView({behavior:"smooth",block:"center"});q.focus();});
+    renderBus();
+  },0);
+})();
+</script></body></html>

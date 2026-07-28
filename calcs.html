@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calcs & Standards · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"calcs.html", crumb:"Calcs & Standards" }), d = T.db();
+  c.appendChild(T.page("Calcs & Standards","Calc packages tied to the real adopted standards, each with an independent-check trail. A code position releases only with a cited source — otherwise it's 'confirm with the AHJ'."));
+  c.appendChild(T.card('<h2>Calc packages</h2><table><thead><tr><th>Package</th><th>Project</th><th>Standard</th><th>By</th><th>Status</th></tr></thead><tbody>'+
+    d.calcs.map(function(x){var st=x.status==="Sealed"?"good":(x.status==="Draft"?"ghost":"watch");
+      return '<tr><td><div class="t-main">'+T.esc(x.pkg)+'</div><div class="t-sub">'+T.esc(x.note)+'</div></td><td class="small">'+T.esc(x.project)+'</td><td>'+T.tag(x.standard,"blue")+'</td><td>'+T.esc(x.by)+'</td><td>'+T.tag(x.status,st)+'</td></tr>';}).join("")+'</tbody></table>'));
+  c.appendChild(T.card('<h2>The standards library</h2><div class="card-sub">Every one carries its real source string — the tell that we know the code, not a memory of it.</div><table><thead><tr><th>Code</th><th>Discipline</th><th>Source</th></tr></thead><tbody>'+
+    T.STANDARDS.map(function(s){return '<tr><td class="k">'+T.esc(s.code)+'</td><td>'+T.esc(s.disc)+'</td><td class="t-sub">'+T.esc(s.src)+'</td></tr>';}).join("")+'</tbody></table>'));
+})();
+</script></body></html>

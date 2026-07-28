@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pursuits · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"pursuits.html", crumb:"Pursuits · Go/No-Go" }), d = T.db();
+  function verdictCard(key){ var r=T.consult(key); if(!r) return null; var v=r.verdict,p=r.passed,dp=r.dept;
+    return T.card('<div class="between"><div><h2>'+T.esc(dp.name)+' · the org\'s read</h2><div class="card-sub">'+T.esc(dp.dh.line)+'</div></div><div>'+T.tag((p?"released":"held")+" · "+v.conf+"%",p?"good":"watch")+'</div></div>'+
+      '<div class="fence'+(p?'':' amber')+'">'+T.esc(v.stance)+'</div>'+
+      '<div class="conf"><span class="muted small">bar '+dp.gate+'%</span><span class="conf-bar"><i class="conf-fill '+(p?'':'under')+'" style="width:'+v.conf+'%"></i><span class="conf-gate" style="left:'+dp.gate+'%"></span></span><span class="conf-n">'+v.conf+'%</span><span class="muted small">'+(p?'released':'needs a human')+'</span></div>'+
+      '<ul class="reasons">'+v.reasons.map(function(x){return '<li><span class="rtag '+x.t+'">'+x.t.toUpperCase()+'</span><span>'+T.esc(x.s)+'</span></li>';}).join("")+'</ul>'); }
+  c.appendChild(T.page("Pursuits · Go/No-Go","The pipeline and the go/no-go argument. QBS/Brooks-Act work is won on qualifications, not price — so the decision is which pursuits deserve a principal's week."));
+  var go=d.pursuits.filter(function(g){return g.decision==="GO";}), val=go.reduce(function(s,g){return s+g.value;},0);
+  c.appendChild(T.card('<div class="statrow">'+T.stat("GO pursuits",go.length,T.money(val)+" of fee","good")+T.stat("In the pipeline",d.pursuits.length,"across all stages")+T.stat("Weighted pipeline",T.money(Math.round(d.pursuits.reduce(function(s,g){return s+g.value*g.probability/100;},0))),"probability-adjusted","blue")+'</div>'));
+  c.appendChild(T.card('<h2>The board</h2><table><thead><tr><th>Pursuit</th><th>Client</th><th>Stage</th><th class="num">Fee</th><th class="num">Win %</th><th>Call</th></tr></thead><tbody>'+
+    d.pursuits.map(function(g){var kind=g.decision==="GO"?"good":(g.decision==="NO-GO"?"bad":"watch");
+      return '<tr><td><div class="t-main">'+T.esc(g.name)+'</div><div class="t-sub">'+T.esc(g.type)+' · '+T.esc(g.owner)+'</div></td><td>'+T.esc(g.client)+'</td><td>'+T.esc(g.stage)+'</td><td class="num">'+T.money(g.value)+'</td><td class="num">'+g.probability+'%</td><td>'+T.tag(g.decision,kind)+'</td></tr>';}).join("")+'</tbody></table>'));
+  var vc=verdictCard("pursuits"); if(vc) c.appendChild(vc);
+})();
+</script></body></html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Projects · WBS · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"projects.html", crumb:"Projects · WBS" }), d = T.db(), m = T.activeModule();
+  function verdictCard(key){ var r=T.consult(key); if(!r) return null; var v=r.verdict,p=r.passed,dp=r.dept;
+    return T.card('<div class="between"><div><h2>'+T.esc(dp.name)+' · the org\'s read</h2><div class="card-sub">'+T.esc(dp.dh.line)+'</div></div><div>'+T.tag((p?"released":"held")+" · "+v.conf+"%",p?"good":"watch")+'</div></div><div class="fence'+(p?'':' amber')+'">'+T.esc(v.stance)+'</div><div class="conf"><span class="muted small">bar '+dp.gate+'%</span><span class="conf-bar"><i class="conf-fill '+(p?'':'under')+'" style="width:'+v.conf+'%"></i><span class="conf-gate" style="left:'+dp.gate+'%"></span></span><span class="conf-n">'+v.conf+'%</span></div><ul class="reasons">'+v.reasons.map(function(x){return '<li><span class="rtag '+x.t+'">'+x.t.toUpperCase()+'</span><span>'+T.esc(x.s)+'</span></li>';}).join("")+'</ul>'); }
+  c.appendChild(T.page("Projects · WBS","The universal core — every project is phase-native, so percent-complete, earned fee and phase profitability fall out instead of being reconstructed. In the "+m.name+" module the milestones read: "+m.milestones.join(" · ")+"."));
+  c.appendChild(T.card('<h2>The portfolio</h2><table><thead><tr><th>Project</th><th>Type</th><th>Lead</th><th>Phase</th><th class="num">% cplt</th><th style="width:140px">Progress</th><th>Target</th></tr></thead><tbody>'+
+    d.projects.map(function(p){return '<tr><td><div class="t-main">'+T.esc(p.name)+'</div><div class="t-sub">'+T.esc(p.number)+' · '+T.esc(p.client)+'</div></td><td>'+T.esc(p.type)+'</td><td>'+T.esc(p.lead)+'</td><td>'+T.esc(p.phase)+'</td><td class="num">'+p.pctComplete+'%</td><td><div class="bar '+(p.pctComplete>=100?"good":"")+'"><i style="width:'+p.pctComplete+'%"></i></div></td><td class="mono small">'+T.esc(p.target)+'</td></tr>';}).join("")+'</tbody></table>'));
+  c.appendChild(T.card('<h2>Milestone map · '+T.esc(m.name)+' module</h2><div class="card-sub">The same spine reads in the vocabulary of the active discipline.</div><div class="row">'+m.milestones.map(function(ms,i){return '<span class="tag '+(i===m.milestones.length-1?"blue":"ghost")+'">'+T.esc(ms)+'</span>';}).join(' <span class="muted">→</span> ')+'</div>'));
+  var vc=verdictCard("design"); if(vc) c.appendChild(vc);
+})();
+</script></body></html>

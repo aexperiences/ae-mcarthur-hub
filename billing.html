@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Billing · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"billing.html", crumb:"Billing" }), d = T.db();
+  c.appendChild(T.page("Billing","Percent-complete invoices, reimbursables at cost + "+T.REIMB_MARKUP+"%, sub-consultant pass-through, and the AR chase. The WIP below is work you've earned and not yet billed."));
+  c.appendChild(T.card('<div class="statrow">'+
+    T.stat("WIP · unbilled",T.money(T.wip()),"earned, not invoiced","blue")+
+    T.stat("Open AR",T.money(d.invoices.filter(function(i){return i.status==="Open";}).reduce(function(s,i){return s+i.amount;},0)),"across "+d.invoices.filter(function(i){return i.status==="Open";}).length+" invoices")+
+    T.stat("AR aging",Math.round(T.arDays())+" d","weighted days out",T.arDays()>60?"watch":"good")+'</div>'));
+  c.appendChild(T.card('<h2>Ready to bill · by project</h2><table><thead><tr><th>Project</th><th>Phase</th><th class="num">Earned</th><th class="num">Billed</th><th class="num">Ready to bill</th></tr></thead><tbody>'+
+    d.projects.filter(function(p){return T.readyToBill(p)>0;}).map(function(p){return '<tr><td class="t-main">'+T.esc(p.name)+'</td><td>'+T.esc(p.phase)+'</td><td class="num">'+T.money(T.earnedToDate(p))+'</td><td class="num">'+T.money(p.billed)+'</td><td class="num" style="color:var(--blue-2);font-weight:700">'+T.money(T.readyToBill(p))+'</td></tr>';}).join("")+'</tbody></table>'));
+  c.appendChild(T.card('<h2>Open invoices</h2><table><thead><tr><th>#</th><th>Project</th><th>Phase</th><th class="num">Amount</th><th class="num">Reimb.</th><th class="num">Age</th><th>Status</th></tr></thead><tbody>'+
+    d.invoices.map(function(i){var st=i.status==="Paid"?"good":(i.age>55?"watch":"ghost");
+      return '<tr><td class="k">'+T.esc(i.num)+'</td><td class="small">'+T.esc(i.project)+'</td><td>'+T.esc(i.phase)+'</td><td class="num">'+T.money(i.amount)+'</td><td class="num">'+T.money(T.reimbursable(i.reimb))+'</td><td class="num">'+(i.status==="Open"?i.age+" d":"—")+'</td><td>'+T.tag(i.status,st)+'</td></tr>';}).join("")+'</tbody></table>'+
+    '<div class="srcnote">Reimbursables shown at cost + '+T.REIMB_MARKUP+'% per standard professional-services terms.</div>'));
+})();
+</script></body></html>

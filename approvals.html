@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Approval Desk · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"approvals.html", crumb:"Approval Desk" });
+  c.appendChild(T.page("Approval Desk","Ghost Mode's gate. The org clears everything it honestly can; only true fences reach this desk — sending, spending, sealing, or setting a fee. Approving here does NOT send or seal anything. This is a showroom.",
+    '<button class="btn ghost sm" id="reload" onclick="location.reload()">Refresh</button>'));
+  function render() {
+    var host = document.getElementById("deskbox");
+    var items = T.approvals().filter(function(a){return a.state==="Pending";});
+    if (!items.length) { host.innerHTML = '<div class="empty">The desk is clear. The org has cleared everything it can honestly clear itself — the north star is an empty desk.</div>'; return; }
+    host.innerHTML = items.map(function (a) {
+      var badge = a.kind==="seal"?"seal":(a.kind==="pricing"?"watch":"blue");
+      return '<div class="card" style="margin-bottom:12px"><div class="between"><div><h2>'+T.esc(a.title)+'</h2><div class="card-sub">'+T.esc(a.summary)+'</div></div><div>'+T.tag(a.kind,badge)+'</div></div>'+
+        '<div class="fence'+(a.kind==="seal"?" seal":"")+'"><b>Why it\'s here:</b> '+T.esc(a.why)+' <span class="muted small">— staged by '+T.esc(a.by)+'</span></div>'+
+        '<div class="row" style="margin-top:11px"><button class="btn blue sm" data-ok="'+a.id+'">Approve (files it — sends nothing)</button><button class="btn ghost sm" data-hold="'+a.id+'">Hold</button></div></div>';
+    }).join("");
+    wire();
+  }
+  function wire() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ok]"), function (b){ b.addEventListener("click", function (){ T.decideApproval(b.dataset.ok,"Approved"); T.toast("Approved and filed — nothing was sent, spent, sealed or published.","ok"); render(); }); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-hold]"), function (b){ b.addEventListener("click", function (){ T.decideApproval(b.dataset.hold,"Held"); T.toast("Held. Left on the desk for you.","ok"); render(); }); });
+  }
+  c.appendChild(T.card('<div id="deskbox"></div>'));
+  render();
+})();
+</script></body></html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modules · The Engine · McArthur Engineering</title>
+<meta name="description" content="McArthur Engineering — one engine, every engineering discipline. Powered by Accelerated Experiences LLC.">
+<link rel="icon" href="mca-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css">
+</head>
+<body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss;
+  var c = T.mount({ active:"modules.html", crumb:"Modules · The Engine" });
+  var m = T.activeModule();
+
+  c.appendChild(T.page("Modules · The Engine",
+    "The reason there isn't a separate OS for civil, mechanical and software: about 85% of an engineering firm is identical — managing time, budget, scope, and the multiplier. Truss runs that universal core once, and switches a module for the 15% that's discipline-specific. Flip it below and watch the firm re-tool."));
+
+  /* the live toggle */
+  c.appendChild(T.card(
+    '<div class="between"><div><h2>The switch</h2><div class="card-sub">Change the discipline, not the software. Everything you do to the books, the pursuits and the seal gate is unaffected.</div></div>'+
+    '<div>'+T.tag("now: "+m.name, "blue")+'</div></div>'+
+    '<div class="modbar">'+
+    T.moduleList().map(function (mm) {
+      var on = mm.key===m.key;
+      return '<button class="modseg '+(on?"on":"")+(mm.key==="mechanical"?" amber":"")+(mm.key==="software"?" violet":"")+'" data-mod="'+mm.key+'"><span class="md-ic">'+mm.ic+'</span>'+T.esc(mm.name)+'</button>';
+    }).join("")+
+    '</div>'
+  ));
+
+  /* universal core vs module layer */
+  c.appendChild(T.card(
+    '<h2>What stays the same · what changes</h2>'+
+    '<div class="card-sub">The core is the product. The module is the fit.</div>'+
+    '<div class="grid g2">'+
+      '<div><table><thead><tr><th>Universal core — every discipline</th></tr></thead><tbody>'+
+        ['The Project Matrix (WBS): phases, tasks, milestones, deliverables','The Financial Engine: billable hours, utilization, multiplier, WIP, invoicing','Resource allocation, availability, capacity planning','Pursuits, proposals, the books, HR, IT, law and the agent org'].map(function (x){ return '<tr><td>'+T.esc(x)+'</td></tr>'; }).join("")+
+      '</tbody></table></div>'+
+      '<div><table><thead><tr><th>The '+T.esc(m.name)+' module — switched on now</th></tr></thead><tbody>'+
+        m.tools.map(function (x){ return '<tr><td>'+T.esc(x)+'</td></tr>'; }).join("")+
+      '</tbody></table></div>'+
+    '</div>'+
+    '<div class="fence" style="margin-top:14px"><b>Standardize the math on money and time</b>, and you can sell one engine to any engineering firm on earth — they only switch on the workflow that matches their field.</div>'
+  ));
+
+  /* the three modules side by side */
+  c.appendChild(T.card(
+    '<h2>The three modules</h2><div class="card-sub">Same engine underneath. This is the fit each one brings.</div>'+
+    '<table><thead><tr><th>Module</th><th>Focus</th><th>Milestones become</th><th>Release gate</th></tr></thead><tbody>'+
+    T.moduleList().map(function (mm) {
+      var on = mm.key===m.key;
+      return '<tr'+(on?' style="background:var(--blue-wash)"':'')+'><td><div class="t-main">'+mm.ic+' '+T.esc(mm.name)+(on?' '+T.tag("active","blue"):'')+'</div><div class="t-sub">'+T.esc(mm.disc)+'</div></td>'+
+        '<td>'+T.esc(mm.tagline)+'</td>'+
+        '<td class="mono small">'+T.esc(mm.milestones.join(" · "))+'</td>'+
+        '<td>'+T.esc(mm.releaseVerb)+'<div class="t-sub">via '+T.esc(mm.sealNoun)+'</div></td></tr>';
+    }).join("")+'</tbody></table>'+
+    '<div class="srcnote">Architecture note: one data model with discipline-specific fields (a civil project carries permit status &amp; lat/long; a software project carries repo URL &amp; sprint) — standardize the shared math, toggle the workflow.</div>'
+  ));
+
+  setTimeout(function () {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-mod]"), function (b) {
+      b.addEventListener("click", function () { T.setModule(this.dataset.mod); T.toast("Switched to the "+T.MODULES[this.dataset.mod].name+" module — the firm re-tools.","ok"); setTimeout(function(){ location.reload(); },500); });
+    });
+  }, 0);
+})();
+</script>
+</body>
+</html>

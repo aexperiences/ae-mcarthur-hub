@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Command Center · McArthur Engineering</title>
+<meta name="description" content="McArthur Engineering — the McArthur Engineering operating system. Powered by Accelerated Experiences LLC.">
+<link rel="icon" href="mca-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css">
+</head>
+<body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss;
+  var c = T.mount({ active:"dashboard.html", crumb:"Command Center" });
+  var d = T.db();
+
+  function fmtVal(k) {
+    var v = k.value;
+    if (k.fmt==="pct") return T.pct(v);
+    if (k.fmt==="x") return (Number(v)||0).toFixed(2)+"x";
+    if (k.fmt==="mo") return (Number(v)||0).toFixed(1)+" mo";
+    if (k.fmt==="days") return Math.round(v)+" d";
+    if (k.fmt==="money") return T.money(v);
+    return v;
+  }
+
+  c.appendChild(T.page("Command Center",
+    "The whole firm on one sheet. Every number below is computed from this OS's own projects, labor and invoices — the same multiplier math Deltek and Zweig publish, not typed in and not reconstructed at month end.",
+    '<button class="btn blue sm" id="toModules" onclick="location.href=\'modules.html\'">Flip the module →</button>'));
+
+  /* ---- THE ENGINE: active module + the pitch ---- */
+  var m = T.activeModule();
+  c.appendChild(T.card(
+    '<div class="between"><div><h2>One engine · running the <span style="color:var(--blue-2)">'+T.esc(m.name)+'</span> module</h2>'+
+    '<div class="card-sub">'+T.esc(m.tagline)+' — the universal core (money, schedule, multiplier) is identical no matter which discipline is switched on. That is the whole thesis: change the discipline, not the software.</div></div>'+
+    '<div>'+T.tag(m.disc,"blue")+'</div></div>'+
+    '<div class="modbar" style="margin-top:6px">'+
+    T.moduleList().map(function (mm) {
+      var on = mm.key===m.key;
+      return '<button class="modseg '+(on?"on":"")+(mm.key==="mechanical"?" amber":"")+(mm.key==="software"?" violet":"")+'" data-mod="'+mm.key+'"><span class="md-ic">'+mm.ic+'</span>'+T.esc(mm.name)+'</button>';
+    }).join("")+
+    '</div>'+
+    '<div class="srcnote">Workflow room re-tools to <b>'+T.esc(m.workflowLabel)+'</b>; milestones become '+T.esc(m.milestones.join(" · "))+'. The books, pursuits and seal gate stay exactly the same.</div>'
+  ));
+
+  /* ---- the signature metric: WIP + the KPI board ---- */
+  var kp = T.kpis();
+  var wipK = kp.filter(function (k){ return k.k==="wip"; })[0];
+  c.appendChild(T.card(
+    '<div class="between"><div><h2>Work in progress — the number that surprises a principal</h2>'+
+    '<div class="card-sub">WIP is what an engineering firm is to a builder: earned work that hasn\'t been invoiced yet. Every dollar here is design you\'ve already paid your staff to produce.</div></div></div>'+
+    '<div class="statrow">'+
+      T.stat("WIP · unbilled", T.money(wipK.value), "Earned, not yet invoiced", "blue")+
+      kp.filter(function(k){return k.k!=="wip";}).map(function (k) {
+        return T.stat(k.label, fmtVal(k), (k.bench&&k.bench.target)?("target "+k.bench.target[0]+"–"+k.bench.target[1]+(k.bench.unit||"")):"", k.band);
+      }).join("")+
+    '</div>'+
+    '<div class="srcnote">'+T.esc(T.BENCH.netMultiplier.src)+'. Benchmarks are target bands, not guarantees; each value is computed live from the seeded firm.</div>'
+  ));
+
+  /* ---- the seal gate alert ---- */
+  var ready = T.unsealedReadyForSeal();
+  if (ready.length) {
+    c.appendChild(T.card(
+      '<div class="between"><div><h2>Waiting on a seal</h2><div class="card-sub">Nothing is '+T.esc(m.releaseVerb)+' until a licensed PE stamps it. These are past 85% and cleared — the gate is a person, not a button.</div></div>'+
+      '<div>'+T.tag(ready.length+" ready", "watch")+'</div></div>'+
+      '<table><thead><tr><th>Project</th><th>Phase</th><th class="num">% complete</th><th>Seal</th></tr></thead><tbody>'+
+      ready.map(function (p) {
+        return '<tr><td><div class="t-main">'+T.esc(p.name)+'</div><div class="t-sub">'+T.esc(p.number)+' · '+T.esc(p.client)+'</div></td>'+
+          '<td>'+T.esc(p.phase)+'</td><td class="num">'+p.pctComplete+'%</td>'+
+          '<td><span class="seal unsealed">⊛ needs '+T.esc(m.sealNoun)+'</span></td></tr>';
+      }).join("")+'</tbody></table>'+
+      '<div class="fence seal" style="margin-top:12px"><b>The seal is on the Approval Desk.</b> The org can clear QA/QC and stage it, but only '+T.esc(m.sealWho)+' stamps — that is a personal, legal act, and Ghost Mode never automates it. <a href="approvals.html">Open the desk →</a></div>'
+    ));
+  }
+
+  /* ---- projects snapshot ---- */
+  c.appendChild(T.card(
+    '<div class="between"><div><h2>The active projects</h2><div class="card-sub">The phase-native spine — percent-complete and earned fee fall out of it, per project.</div></div>'+
+    '<div>'+T.tag(d.projects.length+" projects", "ghost")+'</div></div>'+
+    '<table><thead><tr><th>Project</th><th>Type</th><th>Phase</th><th class="num">% cplt</th><th class="num">Fee</th><th class="num">Earned</th><th>Seal</th></tr></thead><tbody>'+
+    d.projects.map(function (p) {
+      var earned = T.earnedToDate(p);
+      return '<tr><td><div class="t-main">'+T.esc(p.name)+'</div><div class="t-sub">'+T.esc(p.number)+' · '+T.esc(p.lead)+'</div></td>'+
+        '<td>'+T.esc(p.type)+'</td><td>'+T.esc(p.phase)+'</td><td class="num">'+p.pctComplete+'%</td>'+
+        '<td class="num">'+T.money(p.fee)+'</td><td class="num">'+T.money(earned)+'</td>'+
+        '<td>'+(p.sealed?'<span class="seal sealed">✓ sealed</span>':'<span class="seal unsealed">⊛ open</span>')+'</td></tr>';
+    }).join("")+'</tbody></table>'
+  ));
+
+  /* wire the module toggle */
+  setTimeout(function () {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-mod]"), function (b) {
+      b.addEventListener("click", function () { T.setModule(this.dataset.mod); T.toast("Switched to the "+T.MODULES[this.dataset.mod].name+" module.","ok"); setTimeout(function(){ location.reload(); },450); });
+    });
+  }, 0);
+})();
+</script>
+</body>
+</html>

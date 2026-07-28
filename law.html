@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Law · Contracts · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"law.html", crumb:"Law · Contracts" }), d = T.db();
+  function verdictCard(key){ var r=T.consult(key); if(!r) return null; var v=r.verdict,p=r.passed,dp=r.dept;
+    return T.card('<div class="between"><div><h2>'+T.esc(dp.name)+' · the org\'s read</h2><div class="card-sub">'+T.esc(dp.dh.line)+'</div></div><div>'+T.tag((p?"released":"held")+" · "+v.conf+"%",p?"good":"watch")+'</div></div><div class="fence'+(p?'':' amber')+'">'+T.esc(v.stance)+'</div><div class="conf"><span class="muted small">bar '+dp.gate+'%</span><span class="conf-bar"><i class="conf-fill '+(p?'':'under')+'" style="width:'+v.conf+'%"></i><span class="conf-gate" style="left:'+dp.gate+'%"></span></span><span class="conf-n">'+v.conf+'%</span></div><ul class="reasons">'+v.reasons.map(function(x){return '<li><span class="rtag '+x.t+'">'+x.t.toUpperCase()+'</span><span>'+T.esc(x.s)+'</span></li>';}).join("")+'</ul>'); }
+  c.appendChild(T.page("Law · Contracts","EJCDC read, professional liability, standard of care, and FAR Part 31 for government work. Advisory only — a licensed attorney owns the sign-off, and the confidence bar is deliberately capped to prove it."));
+  c.appendChild(T.card('<h2>The docket</h2><table><thead><tr><th>Matter</th><th>Reference</th><th>Risk</th><th>State</th></tr></thead><tbody>'+
+    d.matters.map(function(m){var st=m.risk==="High"?"bad":(m.risk==="Medium"?"watch":"ghost");
+      return '<tr><td><div class="t-main">'+T.esc(m.title)+'</div><div class="t-sub">'+T.esc(m.note)+'</div></td><td class="k">'+T.esc(m.ref)+'</td><td>'+T.tag(m.risk,st)+'</td><td>'+T.tag(m.state,"ghost")+'</td></tr>';}).join("")+'</tbody></table>'+
+    '<div class="fence" style="margin-top:12px"><b>Not a lawyer.</b> This is an advisory read on the contract and the exposure. Anything with real risk routes to a licensed attorney — that\'s why the Law chain\'s confidence is capped under its 85% bar by design.</div>'));
+  var vc=verdictCard("law"); if(vc) c.appendChild(vc);
+})();
+</script></body></html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HR · People Ops · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"hr.html", crumb:"HR · People Ops" }), d = T.db();
+  function verdictCard(key){ var r=T.consult(key); if(!r) return null; var v=r.verdict,p=r.passed,dp=r.dept;
+    return T.card('<div class="between"><div><h2>'+T.esc(dp.name)+' · the org\'s read</h2><div class="card-sub">'+T.esc(dp.dh.line)+'</div></div><div>'+T.tag((p?"released":"held")+" · "+v.conf+"%",p?"good":"watch")+'</div></div><div class="fence'+(p?'':' amber')+'">'+T.esc(v.stance)+'</div><div class="conf"><span class="muted small">bar '+dp.gate+'%</span><span class="conf-bar"><i class="conf-fill '+(p?'':'under')+'" style="width:'+v.conf+'%"></i><span class="conf-gate" style="left:'+dp.gate+'%"></span></span><span class="conf-n">'+v.conf+'%</span></div><ul class="reasons">'+v.reasons.map(function(x){return '<li><span class="rtag '+x.t+'">'+x.t.toUpperCase()+'</span><span>'+T.esc(x.s)+'</span></li>';}).join("")+'</ul>'); }
+  c.appendChild(T.page("HR · People Ops","The roster, onboarding, and licensure. A PE stamp is the firm's license to seal — a lapsed one is a stop-work event, not an HR nicety. AI seats and human seats sit side by side."));
+  c.appendChild(T.card('<h2>The team</h2><table><thead><tr><th>Name</th><th>Role</th><th>Type</th><th>License</th><th>PDH</th><th>Status</th></tr></thead><tbody>'+
+    d.team.map(function(t){var lic=t.license&&t.license.indexOf("2026")>=0;var typ=t.type.indexOf("AI")>=0?"blue":"ghost";
+      return '<tr><td class="t-main">'+T.esc(t.name)+'</td><td>'+T.esc(t.role)+'<div class="t-sub">'+T.esc(t.note)+'</div></td><td>'+T.tag(t.type,typ)+'</td><td class="small'+(lic?'':'')+'">'+(lic?'<span class="tag watch">'+T.esc(t.license)+'</span>':T.esc(t.license))+'</td><td class="mono small">'+T.esc(t.ce)+'</td><td>'+T.tag(t.status,t.status==="Onboarding"?"watch":"good")+'</td></tr>';}).join("")+'</tbody></table>'+
+    '<div class="fence amber" style="margin-top:12px"><b>Marcus Lang\'s PE renews in 5 months</b> and his PDH is behind pace. He\'s a sealing engineer — his license lapsing would stop work he\'s the Engineer of Record on. Booked as an HR action, not an afterthought.</div>'));
+  var vc=verdictCard("hr"); if(vc) c.appendChild(vc);
+})();
+</script></body></html>

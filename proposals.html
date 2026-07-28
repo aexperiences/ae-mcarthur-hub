@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proposals & Fees · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"proposals.html", crumb:"Proposals & Fees" }), d = T.db();
+  c.appendChild(T.page("Proposals & Fees","Fee before the letter goes out — phase-split across 30/60/90/100%, checked against the net multiplier. A fee that doesn't clear the multiplier on real labor cost is a loss you signed up for."));
+  var sample = d.projects.filter(function(p){return p.fee>0;})[0];
+  var split = T.feeByPhase(sample.fee);
+  c.appendChild(T.card('<div class="between"><div><h2>Fee-by-phase — '+T.esc(sample.name)+'</h2><div class="card-sub">'+T.esc(sample.feeBasis)+' on a '+T.money(sample.construction)+' construction cost.</div></div><div>'+T.tag(T.money(sample.fee)+" total","blue")+'</div></div>'+
+    '<table><thead><tr><th>Milestone</th><th class="num">% of fee</th><th class="num">Amount</th><th>Note</th></tr></thead><tbody>'+
+    split.map(function(s){return '<tr><td class="t-main">'+T.esc(s.name)+'</td><td class="num">'+s.pct+'%</td><td class="num">'+T.money(s.amount)+'</td><td class="t-sub">'+T.esc(s.note)+'</td></tr>';}).join("")+'</tbody></table>'));
+  c.appendChild(T.card('<h2>Every project\'s fee basis</h2><table><thead><tr><th>Project</th><th>Basis</th><th class="num">Construction</th><th class="num">Fee</th><th class="num">Fee %</th></tr></thead><tbody>'+
+    d.projects.map(function(p){var pctFee=p.construction?((p.fee/p.construction)*100).toFixed(1)+"%":"—";
+      return '<tr><td class="t-main">'+T.esc(p.name)+'</td><td>'+T.esc(p.feeBasis)+'</td><td class="num">'+T.money(p.construction)+'</td><td class="num">'+(p.fee?T.money(p.fee):"—")+'</td><td class="num">'+pctFee+'</td></tr>';}).join("")+'</tbody></table>'+
+    '<div class="fence" style="margin-top:12px"><b>The multiplier check.</b> Net revenue ÷ direct labor cost should clear ~'+T.BENCH.netMultiplier.target[0]+'–'+T.BENCH.netMultiplier.target[1]+'x. The firm is at <b>'+T.netMultiplier().toFixed(2)+'x</b> right now. '+T.srcNote(T.BENCH.netMultiplier.src).replace('<div class="srcnote">','<span class="muted small">').replace('</div>','</span>')+'</div>'));
+})();
+</script></body></html>

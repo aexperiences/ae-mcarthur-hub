@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PE Seal · IFC · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"seal.html", crumb:"PE Seal · IFC" }), d = T.db(), m = T.activeModule();
+  c.appendChild(T.page("PE Seal · "+m.releaseVerb,"This vertical's rights-gate. Nothing is "+m.releaseVerb+" until "+m.sealWho+" stamps it. The org can clear QA/QC and stage it — but the seal is a personal, legal act, and Ghost Mode never automates it."));
+  var ready = T.unsealedReadyForSeal();
+  c.appendChild(T.card('<div class="statrow">'+
+    T.stat("Sealed",d.projects.filter(function(p){return p.sealed;}).length,"issued for construction","good")+
+    T.stat("Ready for seal",ready.length,"≥85%, QA/QC clear",ready.length?"watch":"good")+
+    T.stat("In design",d.projects.filter(function(p){return !p.sealed&&p.pctComplete<85;}).length,"not yet at the gate")+'</div>'));
+  c.appendChild(T.card('<div class="between"><div><h2>The seal register</h2><div class="card-sub">Who sealed what, and what\'s waiting.</div></div></div>'+
+    '<table><thead><tr><th>Project</th><th>Phase</th><th class="num">% cplt</th><th>Seal status</th><th></th></tr></thead><tbody>'+
+    d.projects.map(function(p){
+      var cell = p.sealed ? '<span class="seal sealed">✓ '+T.esc(p.sealBy)+'</span>' : (p.pctComplete>=85 ? '<span class="seal unsealed">⊛ ready for '+T.esc(m.sealNoun)+'</span>' : '<span class="muted small">in design</span>');
+      var act = (!p.sealed && p.pctComplete>=85) ? '<button class="btn amber sm" data-seal="'+p.id+'">Stage for seal</button>' : '';
+      return '<tr><td><div class="t-main">'+T.esc(p.name)+'</div><div class="t-sub">'+T.esc(p.number)+'</div></td><td>'+T.esc(p.phase)+'</td><td class="num">'+p.pctComplete+'%</td><td>'+cell+'</td><td>'+act+'</td></tr>';
+    }).join("")+'</tbody></table>'+
+    '<div class="fence seal" style="margin-top:12px"><b>Staging is not sealing.</b> "Stage for seal" files it to the Approval Desk for the Engineer of Record. Nothing is issued, sent or stamped by the software — the licensed engineer does that themselves. <a href="approvals.html">Open the Approval Desk →</a></div>'));
+  setTimeout(function(){ Array.prototype.forEach.call(document.querySelectorAll("[data-seal]"),function(b){ b.addEventListener("click",function(){ var p=d.projects.filter(function(x){return x.id===b.dataset.seal;})[0]; T.stage("seal","Seal & "+m.releaseVerb+" — "+p.name,"90% set cleared QA/QC. Ready for the Engineer of Record to stamp.","Only a licensed PE stamps. Staged, not sealed.","The Standards chain"); b.disabled=true; b.textContent="Staged ✓"; T.toast("Staged to the Approval Desk — nothing was sealed or issued.","ok"); }); }); },0);
+})();
+</script></body></html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module Workflow · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="truss.css"></head><body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss, c = T.mount({ active:"workflow.html", crumb:"Module Workflow" }), d = T.db(), m = T.activeModule();
+  function verdictCard(key){ var r=T.consult(key); if(!r) return null; var v=r.verdict,p=r.passed,dp=r.dept;
+    return T.card('<div class="between"><div><h2>'+T.esc(dp.name)+' · the org\'s read</h2><div class="card-sub">'+T.esc(dp.dh.line)+'</div></div><div>'+T.tag((p?"released":"held")+" · "+v.conf+"%",p?"good":"watch")+'</div></div><div class="fence'+(p?'':' amber')+'">'+T.esc(v.stance)+'</div><div class="conf"><span class="muted small">bar '+dp.gate+'%</span><span class="conf-bar"><i class="conf-fill '+(p?'':'under')+'" style="width:'+v.conf+'%"></i><span class="conf-gate" style="left:'+dp.gate+'%"></span></span><span class="conf-n">'+v.conf+'%</span></div><ul class="reasons">'+v.reasons.map(function(x){return '<li><span class="rtag '+x.t+'">'+x.t.toUpperCase()+'</span><span>'+T.esc(x.s)+'</span></li>';}).join("")+'</ul>'); }
+  c.appendChild(T.page(m.workflowLabel, m.workflowBlurb+" This is the module layer — flip the discipline on the Modules room and this whole log re-tools; the numbers underneath don't move.",
+    '<button class="btn ghost sm" onclick="location.href=\'modules.html\'">Flip the module →</button>'));
+  if (m.key==="civil") {
+    var open=d.workflow.filter(function(x){return x.status==="Open"||x.status==="In Review";}), ours=open.filter(function(x){return x.ball==="Engineer";});
+    c.appendChild(T.card('<div class="statrow">'+T.stat("Open items",open.length,"RFIs, submittals, ASIs")+T.stat("In our court",ours.length,"the ball is on us","watch")+T.stat("Aged >10 days",open.filter(function(x){return x.days>10;}).length,"the claim metric owners point at",open.filter(function(x){return x.days>10;}).length?"bad":"good")+'</div>'));
+    c.appendChild(T.card('<h2>The CA log</h2><table><thead><tr><th>#</th><th>Type</th><th>Subject</th><th>Project</th><th>Ball</th><th>Status</th><th class="num">Days</th></tr></thead><tbody>'+
+      d.workflow.map(function(x){var st=x.status==="Closed"?"good":(x.status==="Open"&&x.days>10?"bad":"watch");
+        return '<tr><td class="k">'+T.esc(x.num)+'</td><td>'+T.tag(x.type,"ghost")+'</td><td><div class="t-main">'+T.esc(x.subject)+(x.costImpact?' '+T.tag("cost impact","watch"):'')+'</div><div class="t-sub">'+T.esc(x.note)+'</div></td><td class="small">'+T.esc(x.project)+'</td><td>'+T.esc(x.ball)+'</td><td>'+T.tag(x.status,st)+'</td><td class="num">'+x.days+'</td></tr>';}).join("")+'</tbody></table>'));
+    var vc=verdictCard("field"); if(vc) c.appendChild(vc);
+  } else {
+    c.appendChild(T.card('<div class="between"><div><h2>'+T.esc(m.workflowLabel)+'</h2><div class="card-sub">The '+T.esc(m.name)+' workflow layer.</div></div><div>'+T.tag(m.disc,"blue")+'</div></div>'+
+      '<div class="fence"><b>Same engine, '+T.esc(m.name)+' fit.</b> '+T.esc(m.workflowBlurb)+' The universal core — projects, money, multiplier, the seal/release gate — is running unchanged underneath this view.</div>'+
+      '<div style="margin-top:12px"><label class="f">This module\'s native tools</label><div class="row">'+m.tools.map(function(t){return '<span class="tag ghost">'+T.esc(t)+'</span>';}).join("")+'</div></div>'+
+      '<div style="margin-top:12px"><label class="f">Milestones read as</label><div class="row">'+m.milestones.map(function(ms,i){return '<span class="tag '+(i===m.milestones.length-1?"blue":"ghost")+'">'+T.esc(ms)+'</span>';}).join(' → ')+'</div></div>'+
+      '<div class="srcnote">The Civil module ships the full RFI/submittal/ASI CA log seeded here; Mechanical and Software swap in BOM/part-revision and repo/sprint views on the same records. Flip back to Civil to see the fully seeded log.</div>'));
+  }
+})();
+</script></body></html>

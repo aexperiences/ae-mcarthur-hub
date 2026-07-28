@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Staff Sign-in · McArthur Engineering</title>
+<link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2b3a;--blue:#3f6d92;--amber:#e8a33d;--paper:#f7f5f0;--line:#e4e0d7;--mut:#5f6b76}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+background:linear-gradient(160deg,#1a2b3a,#22384c 60%,#2c4258);font-family:'IBM Plex Sans',system-ui,sans-serif;padding:22px}
+.bp{position:fixed;inset:0;opacity:.13;background-image:linear-gradient(#6f9bbd 1px,transparent 1px),linear-gradient(90deg,#6f9bbd 1px,transparent 1px);background-size:34px 34px}
+.card{position:relative;background:var(--paper);border-radius:20px;max-width:420px;width:100%;padding:38px 36px 30px;box-shadow:0 40px 90px rgba(0,0,0,.4);border-top:5px solid var(--amber)}
+.mk{width:56px;height:56px;display:block;margin:0 auto 14px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:23px;text-align:center;margin:0 0 3px;color:var(--navy)}
+.sub{text-align:center;color:var(--mut);font-size:13px;margin:0 0 22px}
+label{display:block;font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 5px}
+input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 13px;font:inherit;background:#fff}
+input:focus{outline:none;border-color:var(--blue)}
+.btn{width:100%;margin-top:20px;background:var(--amber);color:#241a08;border:none;border-radius:10px;padding:13px;font-weight:700;font-size:15px;cursor:pointer}
+.btn:hover{background:#c9832a}
+.foot{text-align:center;font-size:11.5px;color:var(--mut);margin-top:16px}
+.back{display:block;text-align:center;margin-top:14px;color:var(--blue);font-size:13px;text-decoration:none}
+.note{background:#fff;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
+</style></head><body>
+<div class="bp"></div>
+<div class="card">
+  <img class="mk" src="mca-mark.svg" alt="McArthur Engineering">
+  <h1>McArthur Engineering</h1>
+  <div class="sub">Staff sign-in · Engineering OS</div>
+  <form onsubmit="location.href='dashboard.html';return false;">
+    <label>Name or email</label>
+    <input type="text" placeholder="scott@mcarthur-eng.com" autocomplete="username">
+    <label>Passcode</label>
+    <input type="password" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn" type="submit">Enter the OS →</button>
+  </form>
+  <div class="note">Private preview — this is a live demo of the OS running in your browser. Nothing you type is stored or sent.</div>
+  <a class="back" href="index.html">← Back to the McArthur site</a>
+  <div class="foot">Built by Accelerated Experiences, LLC · an Esposito family business</div>
+</div>
+</body></html>
