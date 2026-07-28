@@ -205,7 +205,7 @@
     grandsuite: { key:"grandsuite", name:"Grandsuite", rank:3, mo:2900, build:24000, desc:"The whole firm, nothing held back. Every department, the full agent org, the Modules engine, and contracts.", base:"Multi-office · unlimited seats · dedicated environment · data migration", includes:["pursuits","proposals","projects","workflow","calcs","billing","seal","permits","modules","books","hr","it","law","org"] }
   };
   var DEPTS = [
-    { group:"Command", items:[ { href:"dashboard.html", label:"Command Center", ic:"◎" }, { href:"calendar.html", label:"Calendar", ic:"▤"}, { href:"contacts.html", label:"Contacts", ic:"☎" }, { href:"approvals.html", label:"Approval Desk", ic:"✓", accent:"ops" } ]},
+    { group:"Command", items:[ { href:"dashboard.html", label:"Command Center", ic:"◎" }, { href:"calendar.html", label:"Calendar", ic:"▤"}, { href:"contacts.html", label:"Contacts", ic:"☎" }, { href:"connect.html", label:"Connect · Video", ic:"◉" }, { href:"approvals.html", label:"Approval Desk", ic:"✓", accent:"ops" } ]},
     { group:"The Engine", items:[ { href:"modules.html", label:"Modules · The Engine", ic:"❖", room:"modules", accent:"modules" } ]},
     { group:"New Business", items:[ { href:"pursuits.html", label:"Pursuits · Go/No-Go", ic:"◆", room:"pursuits", accent:"pursuits" }, { href:"proposals.html", label:"Proposals & Fees", ic:"∑", room:"proposals", accent:"proposal" } ]},
     { group:"The Work", items:[ { href:"projects.html", label:"Projects · WBS", ic:"▦", room:"projects", accent:"projects" }, { href:"workflow.html", label:"Module Workflow", ic:"⇄", room:"workflow", accent:"field" }, { href:"calcs.html", label:"Calcs & Standards", ic:"§", room:"calcs", accent:"calcs" }, { href:"seal.html", label:"PE Seal · IFC", ic:"⊛", room:"seal", accent:"seal" }, { href:"permits.html", label:"Permits & AHJ", ic:"⇋", room:"permits", accent:"permits" } ]},
@@ -623,6 +623,8 @@
     b:'Under the hood is a staffed org of AI seats — departments with a head, a checker, and a pacemaker that won\'t release sloppy work. Nova is the COO seat that routes and packages; Ledger owns standards and the independent check. They draft; humans decide.'},
    {c:'people',t:'Contacts — your book',g:'contacts phone numbers businesses directory kootenai call book import csv add new client vendor',
     b:'The Contacts room is YOUR book. Hit + Add to put in anyone — a client, a contractor, an agency. It comes pre-loaded with Kootenai County and Idaho businesses; search, filter by category or city, tap a row to call or open their site. CSV import and export any time.'},
+   {c:'people',t:'Connect — chat & video calls',g:'connect video call chat channels meeting conference guest invite ring face',
+    b:'Connect is the firm line: message anyone, post to a channel (#office, #the-arc, #field), or get face to face on native video — one on one, the whole office, or an outside guest who joins from a plain browser link. Calls ring the person on whatever page they\'re on.'},
    {c:'safe',t:'Is this private?',g:'private secure who can see safety data security',
     b:'Yes. The website is public; the Office is not. In this preview, everything you type stays in your own browser and is never uploaded anywhere. The real version runs on secured accounts you control.'},
    {c:'safe',t:'Can I break it?',g:'break undo mistake reset floor experiment try',
@@ -713,4 +715,47 @@
   }
   // only on OS pages (they load this engine); skip if body missing
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+})();
+
+/* ── McArthur Connect — hub-wide incoming-call watcher ──────────────────────
+   Polls the Connect backend every 6s for a ring aimed at the signed-in person;
+   pops a Join/Dismiss card on whatever page they're on. Engine loads on Join. */
+(function(){
+  if (typeof document==='undefined') return;
+  var API=(window.MCA_API||'https://ae-mcarthur-connect.vercel.app')+'/api/connect';
+  function me(){ try{ return JSON.parse(sessionStorage.getItem('mca_connect_me')); }catch(e){ return null; } }
+  function post(p){ return fetch(API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(p)}).then(function(r){return r.json();}).catch(function(){return {ok:false};}); }
+  var showing=false;
+  function card(r){
+    if(showing)return; showing=true;
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;right:18px;top:74px;z-index:9600;background:#1a2b3a;color:#eaf1f6;border-radius:14px;padding:16px 18px;box-shadow:0 20px 60px rgba(0,0,0,.45);max-width:300px;font-family:IBM Plex Sans,sans-serif;border-left:4px solid #e8a33d';
+    d.innerHTML='<div style="font-weight:700;font-size:15px">📹 '+(r.name||'Someone')+' is calling</div>'+
+      '<div style="font-size:12px;color:#9fb2c2;margin:3px 0 12px">'+(r.subject||'Incoming video call')+'</div>'+
+      '<button id="mcaJoin" style="font:inherit;font-weight:700;background:#e8a33d;color:#241a08;border:none;border-radius:9px;padding:10px 16px;cursor:pointer">Join</button> '+
+      '<button id="mcaDis" style="font:inherit;background:none;border:1px solid #3f5468;color:#9fb2c2;border-radius:9px;padding:10px 14px;cursor:pointer">Dismiss</button>';
+    document.body.appendChild(d);
+    function done(){ try{document.body.removeChild(d);}catch(e){} showing=false; }
+    d.querySelector('#mcaDis').onclick=done;
+    d.querySelector('#mcaJoin').onclick=function(){
+      done(); var m=me();
+      function go(){ window.MCAMeet.open({room:r.room,displayName:m?m.name:'Guest',subject:r.subject||('Call with '+(r.name||''))}); }
+      if(window.MCAMeet) go();
+      else { var sc=document.createElement('script'); sc.src='mca-rtc.js'; sc.onload=go; document.head.appendChild(sc); }
+    };
+  }
+  function tick(){
+    var m=me(); if(!m) return;
+    post({do:'poll',me:m.slug}).then(function(r){
+      if(r&&r.ok&&r.ring&&r.ring.room) card(r.ring);
+      if(r&&r.ok&&typeof r.unread==='number'){
+        var a=document.querySelector('a[href="connect.html"]');
+        if(a){ var b=a.querySelector('.mca-ub');
+          if(r.unread>0){ if(!b){ b=document.createElement('span'); b.className='mca-ub';
+            b.style.cssText='display:inline-block;min-width:17px;text-align:center;background:#e8a33d;color:#241a08;border-radius:999px;font-size:10.5px;font-weight:700;padding:1px 5px;margin-left:7px'; a.appendChild(b); }
+            b.textContent=r.unread; }
+          else if(b){ b.remove(); } } }
+    });
+  }
+  setInterval(tick,6000); setTimeout(tick,1500);
 })();
