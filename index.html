@@ -145,7 +145,18 @@
   .wcard .go{margin-top:18px}
   .wstep{display:flex;gap:14px;align-items:flex-start;margin:13px 0;font-size:14.5px;line-height:1.5}
   .wnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin-top:2px}
-  .wcard{max-height:92vh;overflow:auto}
+  .wcard{max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch}
+  .btn{touch-action:manipulation}
+  .wcard .go.alt{margin-left:10px}
+  @media(max-width:640px){
+    /* the OVERLAY scrolls (reliable on iOS), card grows naturally */
+    .welcome{align-items:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 12px 30px}
+    .wcard{max-height:none;overflow:visible;padding:26px 20px 22px;margin:0 auto}
+    .wcard h2{font-size:22px}
+    /* stack the buttons full-width, big thumb targets */
+    .wcard .go{display:flex;width:100%;justify-content:center;padding:15px;font-size:16px}
+    .wcard .go.alt{margin-left:0;margin-top:12px}
+  }
 
   @media(max-width:900px){
     nav.links{display:none}
@@ -176,7 +187,7 @@
     <p style="margin-top:16px">Nothing here is public and nothing's been sent to anyone. This is a working preview, just for you. Your crew — Christian, Cameron, Foster, Angela — would each get their own sign-in with their own permissions. You'd see everything; they'd see their part.</p>
     <div class="sig">— Anthony · we pledged in '98, and I build these now. This one's for you.</div>
     <button class="btn primary go" onclick="document.getElementById('welcome').classList.add('hide')">Got it — show me the website →</button>
-    <a class="btn dark go" href="signin.html" style="margin-left:10px">Skip ahead to my Office ⚙ →</a>
+    <a class="btn dark go alt" href="signin.html">Skip ahead to my Office ⚙ →</a>
   </div>
 </div>
 
