@@ -3,7 +3,21 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Projects · WBS · McArthur Engineering</title><link rel="icon" href="mca-mark.svg">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="truss.css"></head><body>
+<link rel="stylesheet" href="truss.css">
+<style>
+.pj-modal{position:fixed;inset:0;background:rgba(20,26,32,.55);display:none;align-items:center;justify-content:center;z-index:600;padding:16px;overflow:auto}
+.pj-modal.on{display:flex}
+.pj-card{background:var(--paper);border-radius:15px;max-width:560px;width:100%;padding:24px;max-height:92vh;overflow:auto;border-top:5px solid var(--amber-3)}
+.pj-card h3{margin:0 0 3px}
+.pj-card .sub{color:var(--mut);font-size:12.5px;margin-bottom:14px}
+.pj-card label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:11px 0 4px}
+.pj-card input,.pj-card select,.pj-card textarea{width:100%;box-sizing:border-box;padding:9px 11px;border-radius:8px;border:1px solid var(--line);font:inherit;font-size:13.5px;background:var(--card)}
+.pj-row{display:flex;gap:10px}.pj-row>div{flex:1}
+.pj-act{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.pj-empty{text-align:center;padding:34px 18px;color:var(--mut)}
+.pj-empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:5px}
+.pj-del{background:none;border:none;color:#8a3d2f;font-size:12.5px;cursor:pointer;font-weight:600}
+</style></head><body>
 <script src="truss.js"></script>
 <script>
 (function () {
@@ -11,8 +25,55 @@
   function verdictCard(key){ var r=T.consult(key); if(!r) return null; var v=r.verdict,p=r.passed,dp=r.dept;
     return T.card('<div class="between"><div><h2>'+T.esc(dp.name)+' · the org\'s read</h2><div class="card-sub">'+T.esc(dp.dh.line)+'</div></div><div>'+T.tag((p?"released":"held")+" · "+v.conf+"%",p?"good":"watch")+'</div></div><div class="fence'+(p?'':' amber')+'">'+T.esc(v.stance)+'</div><div class="conf"><span class="muted small">bar '+dp.gate+'%</span><span class="conf-bar"><i class="conf-fill '+(p?'':'under')+'" style="width:'+v.conf+'%"></i><span class="conf-gate" style="left:'+dp.gate+'%"></span></span><span class="conf-n">'+v.conf+'%</span></div><ul class="reasons">'+v.reasons.map(function(x){return '<li><span class="rtag '+x.t+'">'+x.t.toUpperCase()+'</span><span>'+T.esc(x.s)+'</span></li>';}).join("")+'</ul>'); }
   c.appendChild(T.page("Projects · WBS","The universal core — every project is phase-native, so percent-complete, earned fee and phase profitability fall out instead of being reconstructed. In the "+m.name+" module the milestones read: "+m.milestones.join(" · ")+"."));
-  c.appendChild(T.card('<h2>The portfolio</h2><table><thead><tr><th>Project</th><th>Type</th><th>Lead</th><th>Phase</th><th class="num">% cplt</th><th style="width:140px">Progress</th><th>Target</th></tr></thead><tbody>'+
-    d.projects.map(function(p){return '<tr><td><div class="t-main">'+T.esc(p.name)+'</div><div class="t-sub">'+T.esc(p.number)+' · '+T.esc(p.client)+'</div></td><td>'+T.esc(p.type)+'</td><td>'+T.esc(p.lead)+'</td><td>'+T.esc(p.phase)+'</td><td class="num">'+p.pctComplete+'%</td><td><div class="bar '+(p.pctComplete>=100?"good":"")+'"><i style="width:'+p.pctComplete+'%"></i></div></td><td class="mono small">'+T.esc(p.target)+'</td></tr>';}).join("")+'</tbody></table>'));
+  var host=document.createElement("div"); c.appendChild(host);
+  function money(n){ return T.money(Number(n)||0); }
+  function renderPortfolio(){
+    var d2=T.db();
+    host.innerHTML=T.card(
+      '<div class="between"><div><h2>The portfolio</h2><div class="card-sub">Every job the firm is carrying. Add one and it flows straight into the Command Center, billing and the books.</div></div>'+
+      '<div><button class="btn blue sm" id="pjAdd">+ New project</button></div></div>'+
+      (d2.projects.length?
+      '<table><thead><tr><th>Project</th><th>Type</th><th>Lead</th><th>Phase</th><th class="num">% cplt</th><th style="width:130px">Progress</th><th class="num">Fee</th><th>Target</th><th></th></tr></thead><tbody>'+
+      d2.projects.map(function(p){return '<tr><td><div class="t-main">'+T.esc(p.name)+'</div><div class="t-sub">'+T.esc(p.number||"—")+' · '+T.esc(p.client||"—")+'</div></td><td>'+T.esc(p.type)+'</td><td>'+T.esc(p.lead)+'</td><td>'+T.esc(p.phase)+'</td><td class="num">'+p.pctComplete+'%</td><td><div class="bar '+(p.pctComplete>=100?"good":"")+'"><i style="width:'+p.pctComplete+'%"></i></div></td><td class="num">'+money(p.fee)+'</td><td class="mono small">'+T.esc(p.target||"—")+'</td><td><button class="pj-del" data-del="'+T.esc(p.id)+'">remove</button></td></tr>';}).join("")+
+      '</tbody></table>'
+      :'<div class="pj-empty"><b>No projects yet.</b>This is your book — add the first job and the whole system starts computing: earned value, WIP, billing, the charts on the Command Center.<div class="pj-act" style="justify-content:center;margin-top:14px"><button class="btn blue sm" id="pjAdd2">+ Add your first project</button></div></div>')
+    ).outerHTML;
+    var a=document.getElementById("pjAdd")||document.getElementById("pjAdd2");
+    var a2=document.getElementById("pjAdd2");
+    if(a) a.onclick=openAdd; if(a2) a2.onclick=openAdd;
+    Array.prototype.forEach.call(host.querySelectorAll("[data-del]"),function(b){
+      b.onclick=function(){ if(!confirm("Remove this project? It disappears from billing and the books too.")) return;
+        T.removeProject(this.dataset.del); renderPortfolio(); T.toast("Removed.","ok"); };
+    });
+  }
+  var modal=document.createElement("div"); modal.className="pj-modal"; document.body.appendChild(modal);
+  modal.addEventListener("click",function(e){ if(e.target===modal) modal.classList.remove("on"); });
+  function openAdd(){
+    modal.innerHTML='<div class="pj-card"><h3>New project</h3><div class="sub">Only the name is required — fill in what you know, edit the rest later.</div>'+
+      '<label>Project name</label><input id="pjN" placeholder="e.g. Prairie Ave Extension — Phase 1">'+
+      '<div class="pj-row"><div><label>Job number</label><input id="pjNum" placeholder="26-001"></div><div><label>Client</label><input id="pjC" placeholder="City of Rathdrum"></div></div>'+
+      '<div class="pj-row"><div><label>Type</label><input id="pjT" value="Site / Civil"></div><div><label>Lead</label><select id="pjL"><option>Scott McArthur</option><option>Christian Nead</option><option>Cameron Sayers</option><option>Foster Kirsch</option></select></div></div>'+
+      '<div class="pj-row"><div><label>Phase</label><select id="pjP"><option value="P30">30% — Preliminary</option><option value="P60">60% — Detailed</option><option value="P90">90% — Final review</option><option value="P100">100% — IFC</option></select></div><div><label>% complete</label><input id="pjPct" type="number" min="0" max="100" value="0"></div></div>'+
+      '<div class="pj-row"><div><label>Fee ($)</label><input id="pjF" type="number" min="0" placeholder="185000"></div><div><label>Billed to date ($)</label><input id="pjB" type="number" min="0" value="0"></div></div>'+
+      '<div class="pj-row"><div><label>Construction value ($)</label><input id="pjCv" type="number" min="0" placeholder="2400000"></div><div><label>Target date</label><input id="pjD" type="date"></div></div>'+
+      '<label>Notes</label><textarea id="pjNo" rows="2" placeholder="Scope, jurisdiction, anything worth remembering."></textarea>'+
+      '<div class="pj-act"><button class="btn blue sm" id="pjGo">Add project</button><button class="btn sm" id="pjX">Cancel</button></div></div>';
+    modal.classList.add("on");
+    document.getElementById("pjX").onclick=function(){ modal.classList.remove("on"); };
+    document.getElementById("pjGo").onclick=function(){
+      var n=document.getElementById("pjN").value.trim();
+      if(!n){ T.toast("Give the project a name.","warn"); return; }
+      T.addProject({ name:n, number:document.getElementById("pjNum").value.trim(), client:document.getElementById("pjC").value.trim(),
+        type:document.getElementById("pjT").value.trim(), lead:document.getElementById("pjL").value,
+        phase:document.getElementById("pjP").value, pctComplete:document.getElementById("pjPct").value,
+        fee:document.getElementById("pjF").value, billed:document.getElementById("pjB").value,
+        construction:document.getElementById("pjCv").value, target:document.getElementById("pjD").value,
+        note:document.getElementById("pjNo").value.trim() });
+      modal.classList.remove("on"); renderPortfolio();
+      T.toast("Added. It's live in the Command Center, billing and the books.","ok");
+    };
+  }
+  renderPortfolio();
   c.appendChild(T.card('<h2>Milestone map · '+T.esc(m.name)+' module</h2><div class="card-sub">The same spine reads in the vocabulary of the active discipline.</div><div class="row">'+m.milestones.map(function(ms,i){return '<span class="tag '+(i===m.milestones.length-1?"blue":"ghost")+'">'+T.esc(ms)+'</span>';}).join(' <span class="muted">→</span> ')+'</div>'));
   var vc=verdictCard("design"); if(vc) c.appendChild(vc);
 })();

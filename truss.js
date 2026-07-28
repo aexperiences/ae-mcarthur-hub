@@ -2,7 +2,7 @@
    TRUSS OS — SHOWROOM ENGINE
    Engineering Operating System · Powered by Accelerated Experiences LLC
 
-   BROWSER-ONLY SHOWROOM. No backend, no network. sessionStorage, resets on idle.
+   Runs in the browser on localStorage — the firm's data persists between visits on this machine.
    Faithful to AEHub canon: Founder -> COO -> DH -> AE -> Event Bus -> Pacemaker
    -> Triad (2 opposing lenses), confidence-gated release, LIVE/ESTIMATE/ASSUMPTION
    tags, the Fences (drafts only, nothing sent).
@@ -16,8 +16,8 @@
   "use strict";
 
   var KEY = "truss_showroom_v1";
-  var IDLE_MS = 20 * 60 * 1000;
-  var STORE = sessionStorage;
+  var IDLE_MS = 0; // no idle wipe — this is a real system
+  var STORE = (function(){ try{ localStorage.setItem('_t','1'); localStorage.removeItem('_t'); return localStorage; }catch(e){ return sessionStorage; } })();
 
   function now() { return Date.now(); }
   function read() { try { return JSON.parse(STORE.getItem(KEY)) || null; } catch (e) { return null; } }
@@ -25,7 +25,7 @@
 
   function fresh() {
     return {
-      _t: now(), started: now(), tier: "grandsuite", module: "civil", adds: [], offs: [],
+      _t: now(), started: now(), tier: "grandsuite", module: "civil", adds: [], offs: [], sample: true,
       projects: clone(SEED.projects), workflow: clone(SEED.workflow), calcs: clone(SEED.calcs),
       permits: clone(SEED.permits), pursuits: clone(SEED.pursuits), labor: clone(SEED.labor),
       invoices: clone(SEED.invoices), team: clone(SEED.team), systems: clone(SEED.systems),
@@ -33,9 +33,23 @@
     };
   }
   function clone(a){ return JSON.parse(JSON.stringify(a)); }
-  function db() { var d = read(); if (!d) { d = fresh(); write(d); return d; } if (now()-(d._t||0) > IDLE_MS) { d = fresh(); write(d); } return d; }
+  function db() { var d = read(); if (!d) { d = fresh(); write(d); return d; } return d; }
   function save(mut) { var d = db(); mut(d); write(d); return d; }
+  function addProject(p){ save(function(d){
+      d.projects.unshift({ id:"j"+(Date.now().toString(36)), name:p.name||"Untitled project", number:p.number||"",
+        client:p.client||"", type:p.type||"Site / Civil", phase:p.phase||"P30", pctComplete:Number(p.pctComplete)||0,
+        fee:Number(p.fee)||0, billed:Number(p.billed)||0, lead:p.lead||"Scott McArthur",
+        construction:Number(p.construction)||0, feeBasis:p.feeBasis||"", target:p.target||"",
+        laborCost:Number(p.laborCost)||0, writeOff:0, sealed:false, sealBy:"", standards:[], note:p.note||"" });
+    }); }
+  function updateProject(id,patch){ save(function(d){ for(var i=0;i<d.projects.length;i++) if(d.projects[i].id===id) Object.assign(d.projects[i],patch); }); }
+  function removeProject(id){ save(function(d){ d.projects=d.projects.filter(function(p){return p.id!==id;}); }); }
   function resetFloor() { var d = fresh(); write(d); return d; }
+  function emptyBook() { var d = fresh(); d.sample=false;
+    d.projects=[]; d.workflow=[]; d.calcs=[]; d.permits=[]; d.pursuits=[]; d.invoices=[]; d.matters=[]; d.approvals=[]; d.bus=[];
+    return d; }
+  function goLive() { var d = emptyBook(); write(d); return d; }
+  function isSample() { var d = db(); return d.sample !== false; }
 
   /* ---------------------------------------------------------------- MODULES */
   var MODULES = {
@@ -369,7 +383,7 @@
   function renderTopbar(crumb) {
     var p = priceNow();
     var bar = document.createElement("div"); bar.className = "topbar";
-    bar.innerHTML = '<button class="navtoggle" id="navToggle" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><div class="crumbs">McArthur Engineering · <b>'+esc(crumb)+'</b></div><div class="spacer"></div><div class="tierpill" id="tierPill" role="button" tabindex="0"><span class="dot"></span><div><b>'+esc(p.tier.name)+(p.changed?' <i class="cfg">configured</i>':'')+'</b> <span class="price">every department on</span></div><span class="chev">▾</span></div><div class="who"><div class="av">SM</div><div>Scott McArthur, PE<br><span class="muted small">Principal · Engineer of Record</span></div></div>';
+    bar.innerHTML = '<button class="navtoggle" id="navToggle" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><div class="crumbs">McArthur Engineering · <b>'+esc(crumb)+'</b></div><div class="spacer"></div><div class="tierpill" style="cursor:default"><span class="dot"></span><div><b>McArthur Engineering</b> <span class="price">Civil · Rathdrum, Idaho</span></div></div><div class="who"><div class="av">SM</div><div>Scott McArthur, PE<br><span class="muted small">Principal · Engineer of Record</span></div></div>';
     var menu = document.createElement("div"); menu.className = "tiermenu"; menu.id = "tierMenu";
     menu.appendChild(el('<div class="tm-head">Start from a package, then <b>add or take off any department</b>. Every one is priced on its own, so the build fits the firm instead of the firm fitting the build.</div>'));
     Object.keys(TIERS).sort(function (a,b){ return TIERS[b].rank-TIERS[a].rank; }).forEach(function (k) {
@@ -393,8 +407,9 @@
     setTimeout(function () { var pill=document.getElementById("tierPill"); if (pill) pill.addEventListener("click", function (e){ e.stopPropagation(); menu.classList.toggle("open"); }); document.addEventListener("click", function (){ menu.classList.remove("open"); }); }, 0);
     var frag = document.createDocumentFragment(); frag.appendChild(bar); frag.appendChild(menu); return frag;
   }
-  function ribbon() { return el('<div class="ribbon"><span class="live">McARTHUR OS · PRIVATE PREVIEW</span> — your real system, running in your browser. Everything you type stays on this machine and resets when you leave. <a href="javascript:void(0)" id="resetFloor">Reset the floor</a></div>'); }
-  function footer() { return el('<div class="ae-credit">Built for <b>McArthur Engineering</b> by Accelerated Experiences LLC · The team and The Arc are real; operational figures in this preview are sample data, benchmarks sourced and tagged.</div>'); }
+  function ribbon() { if (!isSample()) return null;
+    return el('<div class="ribbon"><span class="live">SAMPLE DATA</span> — loaded with example jobs so every screen has something in it. When you\'re ready to run the firm for real, <a href="javascript:void(0)" id="resetFloor">start with a clean slate</a> — this clears the examples and this bar never comes back.</div>'); }
+  function footer() { return el('<div class="ae-credit">Built for <b>McArthur Engineering</b> by Accelerated Experiences LLC'+(isSample()?' · Loaded with sample jobs until you start a clean slate; benchmarks sourced and tagged.':' · Running on your own data. Benchmarks sourced and tagged.')+'</div>'); }
 
   function mount(opts) {
     opts = opts || {}; db();
@@ -402,7 +417,7 @@
     var scrim = document.createElement("div"); scrim.className = "navscrim"; scrim.id = "navScrim";
     var side = renderShell(opts.active);
     var main = document.createElement("div"); main.className = "main";
-    main.appendChild(ribbon());
+    var rb=ribbon(); if(rb) main.appendChild(rb);
     main.appendChild(renderTopbar(opts.crumb || "Command Center"));
     var content = document.createElement("div"); content.className = "content"; content.id = "content";
     main.appendChild(content); main.appendChild(footer());
@@ -411,7 +426,9 @@
     document.body.appendChild(el('<div id="toast-wrap"></div>'));
     setTimeout(function () {
       var r = document.getElementById("resetFloor");
-      if (r) r.addEventListener("click", function (){ resetFloor(); toast("Showroom reset to a fresh floor.","ok"); setTimeout(function(){location.reload();},450); });
+      if (r) r.addEventListener("click", function (){
+        if(!confirm("Clear the sample jobs and start McArthur Engineering's real book?\n\nYour contacts and records stay. This cannot be undone.")) return;
+        goLive(); toast("Clean slate. This is your book now.","ok"); setTimeout(function(){location.reload();},500); });
       var t = document.getElementById("navToggle");
       if (t) t.addEventListener("click", function (){ app.classList.toggle("nav-open"); });
       if (scrim) scrim.addEventListener("click", function (){ app.classList.remove("nav-open"); });
@@ -429,7 +446,7 @@
   document.addEventListener("visibilitychange", function (){ if (!document.hidden) db(); });
 
   global.Truss = {
-    db:db, save:save, resetFloor:resetFloor, fresh:fresh, SEED:SEED,
+    db:db, save:save, resetFloor:resetFloor, goLive:goLive, isSample:isSample, addProject:addProject, updateProject:updateProject, removeProject:removeProject, fresh:fresh, SEED:SEED,
     MODULES:MODULES, moduleList:moduleList, activeModule:activeModule, setModule:setModule,
     PHASES:PHASES, CA_TYPES:CA_TYPES, BALL:BALL, STANDARDS:STANDARDS, BENCH:BENCH, REPLACES:REPLACES,
     TIERS:TIERS, ROOMS:ROOMS, DEPTS:DEPTS, SEATS:SEATS, BRAIN:BRAIN,
