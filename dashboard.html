@@ -9,6 +9,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="truss.css">
+<style>
+  .chartwrap{display:grid;grid-template-columns:1fr;gap:18px}
+  .chartrow2{display:grid;grid-template-columns:1fr 1.2fr;gap:18px;margin-top:4px}
+  @media(max-width:760px){.chartrow2{grid-template-columns:1fr}}
+  .ch-box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px 10px}
+  .ch-title{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+  .ch-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);margin-top:6px}
+  .ch-legend span{display:inline-flex;align-items:center;gap:6px}
+  .ch-sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .ch-svg{width:100%;height:auto;display:block}
+</style>
 </head>
 <body>
 <script src="truss.js"></script>
@@ -61,6 +72,79 @@
     '</div>'+
     '<div class="srcnote">'+T.esc(T.BENCH.netMultiplier.src)+'. Benchmarks are target bands, not guarantees; each value is computed live from the seeded firm.</div>'
   ));
+
+  /* ---- THE FIRM, DRAWN: live charts off the same spine ---- */
+  (function charts() {
+    var P = d.projects.slice();
+    var kk = function(n){ n=Number(n)||0; return n>=1000000 ? ("$"+(n/1000000).toFixed(2).replace(/\.?0+$/,"")+"M") : ("$"+Math.round(n/1000)+"k"); };
+    var shortName = function(nm){ nm=String(nm); var cut=nm.split(" — ")[0]; return cut.length>26?cut.slice(0,25)+"…":cut; };
+
+    /* -- 1) money spine bars: fee track, earned bar, billed bar; the lighter tail IS the WIP -- */
+    var maxFee = Math.max.apply(null, P.map(function(p){return p.fee||0;}).concat([1]));
+    var rowH=34, labW=190, valW=74, W=760, barW=W-labW-valW, top=6;
+    var H=top+P.length*rowH+4, svg1='';
+    P.forEach(function(p,i){
+      var y=top+i*rowH, earned=T.earnedToDate(p), fw=Math.max(2,(p.fee/maxFee)*barW),
+          ew=Math.max(0,(earned/maxFee)*barW), bw=Math.max(0,(p.billed/maxFee)*barW),
+          wip=Math.max(0,earned-p.billed);
+      svg1+='<text x="0" y="'+(y+16)+'" font-size="11.5" fill="var(--ink-2)" font-family="IBM Plex Sans,sans-serif">'+T.esc(shortName(p.name))+'</text>'
+        +'<rect x="'+labW+'" y="'+(y+5)+'" width="'+fw+'" height="15" rx="4" fill="var(--sunk)"/>'
+        +'<rect x="'+labW+'" y="'+(y+5)+'" width="'+ew+'" height="15" rx="4" fill="var(--blue-3)"/>'
+        +'<rect x="'+labW+'" y="'+(y+5)+'" width="'+bw+'" height="15" rx="4" fill="var(--blue-2)"/>'
+        +(wip>500?'<text x="'+(labW+Math.max(ew,bw)+6)+'" y="'+(y+17)+'" font-size="10.5" font-weight="600" fill="var(--amber-2)" font-family="IBM Plex Mono,monospace">'+kk(wip)+' WIP</text>':'')
+        +'<text x="'+W+'" y="'+(y+17)+'" text-anchor="end" font-size="10.5" fill="var(--mut)" font-family="IBM Plex Mono,monospace">'+kk(p.fee)+'</text>';
+    });
+
+    /* -- 2) donut: fee by phase -- */
+    var phases=["P30","P60","P90","P100"], pcol={P30:"#5a6b74",P60:"var(--blue)",P90:"var(--amber)",P100:"#2f7d5f"},
+        plab={P30:"30% Prelim",P60:"60% Detailed",P90:"90% Review",P100:"100% IFC"};
+    var byPh={}, tot=0; phases.forEach(function(ph){byPh[ph]=0;});
+    P.forEach(function(p){ if(byPh[p.phase]!=null){byPh[p.phase]+=p.fee||0; tot+=p.fee||0;} });
+    var R=54, CX=70, CY=70, CIRC=2*Math.PI*R, off=0, svg2='';
+    phases.forEach(function(ph){
+      var frac=tot?byPh[ph]/tot:0; if(frac<=0)return;
+      svg2+='<circle cx="'+CX+'" cy="'+CY+'" r="'+R+'" fill="none" stroke="'+pcol[ph]+'" stroke-width="20" stroke-dasharray="'+(frac*CIRC)+' '+CIRC+'" stroke-dashoffset="'+(-off*CIRC)+'" transform="rotate(-90 '+CX+' '+CY+')"/>';
+      off+=frac;
+    });
+    svg2+='<text x="'+CX+'" y="'+(CY-2)+'" text-anchor="middle" font-size="15" font-weight="700" fill="var(--ink)" font-family="IBM Plex Sans,sans-serif">'+kk(tot)+'</text>'
+        +'<text x="'+CX+'" y="'+(CY+14)+'" text-anchor="middle" font-size="9.5" fill="var(--mut)" font-family="IBM Plex Mono,monospace">FEE UNDER CONTRACT</text>';
+    var leg2=phases.filter(function(ph){return byPh[ph]>0;}).map(function(ph){
+      return '<span><i class="ch-sw" style="background:'+pcol[ph]+'"></i>'+plab[ph]+' · '+kk(byPh[ph])+'</span>'; }).join('');
+
+    /* -- 3) health bullets vs target bands -- */
+    function bullet(label,val,lo,hi,max,fmt){
+      var bw2=420, x0=120, y0=14;
+      var vx=Math.min(bw2,(val/max)*bw2), lx=(lo/max)*bw2, hx=(hi/max)*bw2;
+      var inBand=val>=lo&&val<=hi;
+      return '<text x="0" y="'+(y0+11)+'" font-size="11.5" fill="var(--ink-2)" font-family="IBM Plex Sans,sans-serif">'+label+'</text>'
+        +'<rect x="'+x0+'" y="'+y0+'" width="'+bw2+'" height="14" rx="4" fill="var(--sunk)"/>'
+        +'<rect x="'+(x0+lx)+'" y="'+y0+'" width="'+(hx-lx)+'" height="14" fill="var(--blue-wash)" stroke="var(--blue-3)" stroke-dasharray="3 3" stroke-width="1"/>'
+        +'<rect x="'+x0+'" y="'+(y0+3)+'" width="'+vx+'" height="8" rx="3" fill="'+(inBand?'var(--blue-2)':'var(--amber)')+'"/>'
+        +'<text x="'+(x0+bw2+8)+'" y="'+(y0+11)+'" font-size="11" font-weight="700" fill="'+(inBand?'var(--blue-2)':'var(--amber-2)')+'" font-family="IBM Plex Mono,monospace">'+fmt+'</text>';
+    }
+    var utilK=kp.filter(function(k){return k.k==="utilization";})[0], mulK=kp.filter(function(k){return k.k==="netMultiplier";})[0];
+    var svg3='';
+    if(utilK) svg3+='<g>'+bullet("Utilization",Number(utilK.value)||0,utilK.bench.target[0],utilK.bench.target[1],100,(Number(utilK.value)||0).toFixed(0)+"%")+'</g>';
+    if(mulK) svg3+='<g transform="translate(0,38)">'+bullet("Net multiplier",Number(mulK.value)||0,mulK.bench.target[0],mulK.bench.target[1],4.5,(Number(mulK.value)||0).toFixed(2)+"x")+'</g>';
+
+    c.appendChild(T.card(
+      '<div class="between"><div><h2>The firm, drawn</h2>'+
+      '<div class="card-sub">Same numbers, as pictures — every bar and slice is computed live from the projects below, nothing hand-entered.</div></div></div>'+
+      '<div class="chartwrap">'+
+        '<div class="ch-box"><div class="ch-title">The money spine, per project</div>'+
+          '<svg class="ch-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Fee, earned and billed per project">'+svg1+'</svg>'+
+          '<div class="ch-legend"><span><i class="ch-sw" style="background:var(--sunk)"></i>Fee under contract</span><span><i class="ch-sw" style="background:var(--blue-3)"></i>Earned to date</span><span><i class="ch-sw" style="background:var(--blue-2)"></i>Billed</span><span><i class="ch-sw" style="background:var(--amber)"></i>The gap = WIP, waiting to be invoiced</span></div></div>'+
+        '<div class="chartrow2">'+
+          '<div class="ch-box"><div class="ch-title">Where the fee sits, by phase</div>'+
+            '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap"><svg class="ch-svg" style="max-width:150px" viewBox="0 0 140 140" role="img" aria-label="Fee by phase">'+svg2+'</svg>'+
+            '<div class="ch-legend" style="flex-direction:column;align-items:flex-start;gap:7px">'+leg2+'</div></div></div>'+
+          '<div class="ch-box"><div class="ch-title">Health vs. the Zweig band</div>'+
+            '<svg class="ch-svg" viewBox="0 0 620 78" role="img" aria-label="Utilization and multiplier against target bands">'+svg3+'</svg>'+
+            '<div class="ch-legend"><span><i class="ch-sw" style="background:var(--blue-wash);border:1px dashed var(--blue-3)"></i>Target band</span><span><i class="ch-sw" style="background:var(--blue-2)"></i>In band</span><span><i class="ch-sw" style="background:var(--amber)"></i>Outside band</span></div></div>'+
+        '</div>'+
+      '</div>'
+    ));
+  })();
 
   /* ---- the seal gate alert ---- */
   var ready = T.unsealedReadyForSeal();
