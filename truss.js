@@ -222,7 +222,7 @@
     { group:"Command", items:[ { href:"dashboard.html", label:"Command Center", ic:"◎" }, { href:"calendar.html", label:"Calendar", ic:"▤"}, { href:"contacts.html", label:"Contacts", ic:"☎" }, { href:"connect.html", label:"Connect · Video", ic:"◉" }, { href:"records.html", label:"Records · Filing", ic:"▤" }, { href:"approvals.html", label:"Approval Desk", ic:"✓", accent:"ops" } ]},
     { group:"The Engine", items:[ { href:"modules.html", label:"Modules · The Engine", ic:"❖", room:"modules", accent:"modules" } ]},
     { group:"New Business", items:[ { href:"pursuits.html", label:"Pursuits · Go/No-Go", ic:"◆", room:"pursuits", accent:"pursuits" }, { href:"proposals.html", label:"Proposals & Fees", ic:"∑", room:"proposals", accent:"proposal" } ]},
-    { group:"The Work", items:[ { href:"projects.html", label:"Projects · WBS", ic:"▦", room:"projects", accent:"projects" }, { href:"workflow.html", label:"Module Workflow", ic:"⇄", room:"workflow", accent:"field" }, { href:"calcs.html", label:"Calcs & Standards", ic:"§", room:"calcs", accent:"calcs" }, { href:"seal.html", label:"PE Seal · IFC", ic:"⊛", room:"seal", accent:"seal" }, { href:"permits.html", label:"Permits & AHJ", ic:"⇋", room:"permits", accent:"permits" } ]},
+    { group:"The Work", items:[ { href:"projects.html", label:"Projects · WBS", ic:"▦", room:"projects", accent:"projects" }, { href:"workflow.html", label:"Module Workflow", ic:"⇄", room:"workflow", accent:"field" }, { href:"field.html", label:"Field Reports", ic:"⛏", room:"workflow", accent:"field" }, { href:"drawings.html", label:"Drawing Register", ic:"▤", room:"workflow", accent:"projects" }, { href:"calcs.html", label:"Calcs & Standards", ic:"§", room:"calcs", accent:"calcs" }, { href:"seal.html", label:"PE Seal · IFC", ic:"⊛", room:"seal", accent:"seal" }, { href:"permits.html", label:"Permits & AHJ", ic:"⇋", room:"permits", accent:"permits" } ]},
     { group:"Money", items:[ { href:"billing.html", label:"Billing", ic:"◧", room:"billing", accent:"money" }, { href:"books.html", label:"Books & Multipliers", ic:"◭", room:"books", accent:"money" } ]},
     { group:"People & Systems", items:[ { href:"hr.html", label:"HR · People Ops", ic:"☷", room:"hr", accent:"hr" }, { href:"it.html", label:"IT · System Health", ic:"♥", room:"it", accent:"it" } ]},
     { group:"Governance", items:[ { href:"law.html", label:"Law · Contracts", ic:"⚖", room:"law", accent:"law" }, { href:"org.html", label:"Agent Org · Bus", ic:"❖", room:"org", accent:"ops" } ]}
@@ -778,3 +778,7 @@
   }
   setInterval(tick,6000); setTimeout(tick,1500);
 })();
+
+
+/* MCA NOVA LAYER loader (Jul 29 2026) — voice + deep answers + Nova fill + bus ticker */
+(function(){ if(document.getElementById("mcaNovaLd")) return; var s=document.createElement("script"); s.id="mcaNovaLd"; s.src="mca-nova.js"; s.defer=true; document.head.appendChild(s); })();
