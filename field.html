@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Field Reports · McArthur Engineering OS</title>
+<meta name="description" content="Daily logs, site visits and punch lists — filed from the truck, attached to the project, findable forever. McArthur Engineering OS by Accelerated Experiences LLC.">
+<link rel="icon" href="mca-mark.svg">
+<meta name="theme-color" content="#1a2b3a">
+<link rel="stylesheet" href="truss.css">
+<style>
+  .fr-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fr-form .wide{grid-column:1/-1}
+  .fr-form label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.7;display:block;margin-bottom:3px}
+  .fr-form input,.fr-form select,.fr-form textarea{width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:8px 10px;border-radius:8px;border:1px solid rgba(26,43,58,.25);background:#fff}
+  .fr-form textarea{min-height:64px;resize:vertical}
+  .fr-shots{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .fr-shots img{width:92px;height:64px;object-fit:cover;border-radius:6px;border:1px solid rgba(26,43,58,.25)}
+  .fr-report{border:1px solid rgba(26,43,58,.18);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff}
+  .fr-report h3{margin:0 0 4px;font-size:15px}
+  .fr-report .meta{font-size:12px;opacity:.65;margin-bottom:6px}
+  .fr-report p{font-size:13.5px;line-height:1.5;margin:4px 0}
+  .fr-punch{display:flex;align-items:center;gap:8px;font-size:13px;padding:5px 0;border-top:1px dashed rgba(26,43,58,.15)}
+  .fr-punch button{border:1px solid rgba(26,43,58,.3);background:#f2f5f8;border-radius:6px;padding:2px 9px;font-size:11.5px;cursor:pointer;font-family:inherit}
+  .fr-punch.done{opacity:.5;text-decoration:line-through}
+</style>
+</head>
+<body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss;
+  var c = T.mount({ active:"field.html", crumb:"Field Reports" });
+  var d = T.db();
+
+  /* seed once, sample-tagged, only while the book is the sample book */
+  if (!d.fieldReports && d.sample !== false) {
+    T.save(function(x){
+      x.fieldReports = [
+        { id:"fr1", date:"2026-07-27", project:"The Arc — Post Falls", weather:"Sunny · 84°", crew:6,
+          by:"Christian Nead", work:"[Sample] Storm main trenching along the east frontage — 240 LF laid and bedded. Compaction passing at 95%+.",
+          issues:"[Sample] Unmarked irrigation lateral hit at STA 4+20 — capped, city notified, photo filed.",
+          punch:[{t:"[Sample] Re-stake curb returns at NE corner",done:false},{t:"[Sample] Deliver compaction results to city inspector",done:true}], shots:[] },
+        { id:"fr2", date:"2026-07-24", project:"Rathdrum Prairie Subdivision", weather:"Overcast · 71°", crew:4,
+          by:"Foster Kirsch", work:"[Sample] Walked phase-2 grading with the contractor; swale sections conform to plan within tolerance.",
+          issues:"", punch:[{t:"[Sample] Confirm hydrant lead depth at Lot 14",done:false}], shots:[] }
+      ];
+    });
+    d = T.db();
+  }
+  if (!d.fieldReports) { T.save(function(x){ x.fieldReports = []; }); d = T.db(); }
+
+  var reports = d.fieldReports || [];
+  var openPunch = reports.reduce(function(a,r){ return a + (r.punch||[]).filter(function(p){return !p.done;}).length; },0);
+
+  c.appendChild(T.page("Field Reports",
+    "The day, filed from the truck — daily logs, site visits, photos and punch lists, attached to the project and findable forever. This is the paper trail that wins the argument eight months later. Works on the phone; Nova can draft the write-up."));
+
+  c.appendChild(T.card('<div class="stats">'+
+    T.stat("Reports on file", reports.length, "every one attached to its project")+
+    T.stat("Open punch items", openPunch, openPunch? "someone owes the field an answer" : "clear", openPunch?"watch":"good")+
+    T.stat("This month", reports.filter(function(r){return (r.date||"").slice(0,7)===new Date().toISOString().slice(0,7);}).length, "filed in "+new Date().toLocaleString('en-US',{month:'long'}))+
+    '</div>'));
+
+  /* ---- new report form ---- */
+  var projOpts = (d.projects||[]).map(function(p){ return '<option>'+T.esc(p.name)+'</option>'; }).join("");
+  var form = T.card(
+    '<h2>File a report</h2><div class="card-sub">Hit ✎ Nova fill and she drafts the whole thing from the spine — you fix and save.</div>'+
+    '<div class="fr-form">'+
+      '<div><label>Date</label><input type="date" id="frDate"></div>'+
+      '<div><label>Project</label><select id="frProj"><option value=""></option>'+projOpts+'</select></div>'+
+      '<div><label>Weather / conditions</label><input id="frWx" placeholder="Sunny · 84°"></div>'+
+      '<div><label>Crew on site</label><input id="frCrew" type="number" min="0" placeholder="6"></div>'+
+      '<div class="wide"><label>Work performed</label><textarea id="frWork" placeholder="What actually happened on site today…"></textarea></div>'+
+      '<div class="wide"><label>Issues / observations</label><textarea id="frIss" placeholder="Anything the office or the record needs to know"></textarea></div>'+
+      '<div class="wide"><label>Punch items (one per line)</label><textarea id="frPunch" placeholder="Re-stake curb returns at NE corner"></textarea></div>'+
+      '<div class="wide"><label>Photos</label><input type="file" id="frShots" accept="image/*" multiple capture="environment"><div class="fr-shots" id="frPrev"></div></div>'+
+    '</div>'+
+    '<div style="margin-top:10px;display:flex;gap:8px;align-items:center">'+
+      '<button class="btn btn-acc" id="frSave">File the report →</button>'+
+      '<span class="muted small">Filed reports land on the bus and in the project record.</span>'+
+    '</div>');
+  c.appendChild(form);
+
+  var shots=[];
+  form.querySelector("#frShots").onchange=function(){
+    Array.prototype.slice.call(this.files).forEach(function(f){
+      var r=new FileReader();
+      r.onload=function(){
+        var im=new Image();
+        im.onload=function(){
+          var t=document.createElement("canvas"); var k=Math.min(1,800/Math.max(im.width,im.height));
+          t.width=Math.round(im.width*k); t.height=Math.round(im.height*k);
+          t.getContext("2d").drawImage(im,0,0,t.width,t.height);
+          shots.push(t.toDataURL("image/jpeg",0.65));
+          var pv=document.createElement("img"); pv.src=shots[shots.length-1];
+          form.querySelector("#frPrev").appendChild(pv);
+        };
+        im.src=r.result;
+      };
+      r.readAsDataURL(f);
+    });
+    this.value="";
+  };
+
+  form.querySelector("#frSave").onclick=function(){
+    var proj=form.querySelector("#frProj").value;
+    var work=form.querySelector("#frWork").value.trim();
+    if(!proj || !work){ T.toast("A report needs at least a project and the work performed."); return; }
+    var punch=form.querySelector("#frPunch").value.split("\n").map(function(s){return s.trim();}).filter(Boolean)
+      .map(function(t){ return {t:t,done:false}; });
+    try{
+      T.save(function(x){
+        x.fieldReports=x.fieldReports||[];
+        x.fieldReports.unshift({ id:"fr"+Date.now(), date:form.querySelector("#frDate").value||new Date().toISOString().slice(0,10),
+          project:proj, weather:form.querySelector("#frWx").value.trim(), crew:+form.querySelector("#frCrew").value||0,
+          by:"", work:work, issues:form.querySelector("#frIss").value.trim(), punch:punch, shots:shots });
+        x.bus.push({ id:"e"+(x.seq++), dept:"ops", topic:"field.report", kind:"file",
+          from:"Field", to:"the record", body:"Field report filed on "+proj+" — "+work.slice(0,60), at:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) });
+      });
+      T.toast("Report filed — it's on the bus and in the record.");
+      setTimeout(function(){ location.reload(); }, 700);
+    }catch(e){ T.toast("Browser storage is full — fewer/smaller photos on this device."); }
+  };
+
+  /* ---- the log ---- */
+  var log=T.card('<h2>The log</h2><div id="frLog"></div>');
+  c.appendChild(log);
+  var host=log.querySelector("#frLog");
+  if(!reports.length) host.innerHTML='<p class="muted">No reports yet — the first one takes two minutes, or one Nova fill.</p>';
+  reports.forEach(function(r,ri){
+    var div=document.createElement("div"); div.className="fr-report";
+    div.innerHTML='<h3>'+T.esc(r.project)+'</h3>'+
+      '<div class="meta">'+T.esc(r.date)+(r.by?' · '+T.esc(r.by):'')+(r.weather?' · '+T.esc(r.weather):'')+(r.crew?' · crew of '+r.crew:'')+'</div>'+
+      '<p><b>Work:</b> '+T.esc(r.work)+'</p>'+
+      (r.issues?'<p><b>Issues:</b> '+T.esc(r.issues)+'</p>':'')+
+      (r.shots&&r.shots.length?('<div class="fr-shots">'+r.shots.map(function(s){return '<img src="'+s+'">';}).join("")+'</div>'):'')+
+      (r.punch&&r.punch.length? r.punch.map(function(p,pi){
+        return '<div class="fr-punch'+(p.done?' done':'')+'"><button data-ri="'+ri+'" data-pi="'+pi+'">'+(p.done?'↩︎ reopen':'✓ close')+'</button>'+T.esc(p.t)+'</div>';
+      }).join("") : '');
+    host.appendChild(div);
+  });
+  host.onclick=function(e){
+    var b=e.target.closest("button[data-ri]"); if(!b) return;
+    var ri=+b.dataset.ri, pi=+b.dataset.pi;
+    T.save(function(x){ var p=x.fieldReports[ri].punch[pi]; p.done=!p.done; });
+    location.reload();
+  };
+
+  c.appendChild(T.card('<h2>Why this room exists</h2><p class="sub">Civil work is decided in the field and argued in the office. The firms that win those arguments are the ones whose daily record was filed the same day, with photos, attached to the job — not reconstructed from memory in an email thread. This room makes the filed version the easy version.</p>'));
+})();
+</script>
+</body>
+</html>
