@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Drawing Register · McArthur Engineering OS</title>
+<meta name="description" content="Sheet index, revisions and transmittals — who has which set, and who is building from an old one. McArthur Engineering OS by Accelerated Experiences LLC.">
+<link rel="icon" href="mca-mark.svg">
+<meta name="theme-color" content="#1a2b3a">
+<link rel="stylesheet" href="truss.css">
+<style>
+  .dr-tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .dr-tbl th{text-align:left;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.6;padding:6px 8px;border-bottom:1px solid rgba(26,43,58,.2)}
+  .dr-tbl td{padding:7px 8px;border-bottom:1px solid rgba(26,43,58,.09);vertical-align:top}
+  .dr-rev{font-family:monospace;font-weight:700}
+  .dr-old{color:#a33;font-weight:700}
+  .dr-form{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .dr-form .wide{grid-column:1/-1}
+  .dr-form label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.7;display:block;margin-bottom:3px}
+  .dr-form input,.dr-form select{width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;padding:8px 10px;border-radius:8px;border:1px solid rgba(26,43,58,.25);background:#fff}
+  @media(max-width:800px){.dr-form{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<script src="truss.js"></script>
+<script>
+(function () {
+  var T = window.Truss;
+  var c = T.mount({ active:"drawings.html", crumb:"Drawing Register" });
+  var d = T.db();
+
+  if (!d.drawings && d.sample !== false) {
+    T.save(function(x){
+      x.drawings = [
+        { id:"s1", no:"C-101", title:"[Sample] Site Plan", proj:"The Arc — Post Falls", rev:"C", date:"2026-07-18", status:"Current" },
+        { id:"s2", no:"C-201", title:"[Sample] Grading & Drainage", proj:"The Arc — Post Falls", rev:"B", date:"2026-07-10", status:"Current" },
+        { id:"s3", no:"C-301", title:"[Sample] Utility Plan", proj:"The Arc — Post Falls", rev:"C", date:"2026-07-18", status:"Current" },
+        { id:"s4", no:"C-501", title:"[Sample] Details", proj:"The Arc — Post Falls", rev:"A", date:"2026-06-20", status:"Current" },
+        { id:"s5", no:"C-101", title:"[Sample] Site Plan", proj:"Rathdrum Prairie Subdivision", rev:"A", date:"2026-07-02", status:"Current" }
+      ];
+      x.transmittals = [
+        { id:"t1", to:"[Sample] GC — Arc Builders LLC", proj:"The Arc — Post Falls", date:"2026-07-12", via:"Email PDF", sheets:"C-101 rev B · C-201 rev B · C-301 rev B" },
+        { id:"t2", to:"[Sample] City of Post Falls — plan review", proj:"The Arc — Post Falls", date:"2026-07-19", via:"Portal upload", sheets:"C-101 rev C · C-201 rev B · C-301 rev C" }
+      ];
+    });
+    d = T.db();
+  }
+  if (!d.drawings){ T.save(function(x){ x.drawings=[]; x.transmittals=[]; }); d=T.db(); }
+
+  var sheets=d.drawings||[], trans=d.transmittals||[];
+
+  /* who is building from an old set: transmittal mentions a sheet at a rev older than current */
+  function staleHolders(){
+    var out=[];
+    trans.forEach(function(t){
+      (t.sheets||"").split("·").forEach(function(tok){
+        var m=tok.trim().match(/^(\S+)\s+rev\s+(\w+)/i);
+        if(!m) return;
+        var cur=sheets.filter(function(s){ return s.no===m[1] && s.proj===t.proj && s.status==="Current"; })[0];
+        if(cur && cur.rev>m[2]) out.push({to:t.to, sheet:m[1], has:m[2], current:cur.rev, proj:t.proj, date:t.date});
+      });
+    });
+    return out;
+  }
+  var stale=staleHolders();
+
+  c.appendChild(T.page("Drawing Register",
+    "The sheet index, every revision, and every transmittal — so the one question that causes real damage always has an answer: who is holding which set? If anyone out there is building from an old sheet, this page says so in red."));
+
+  c.appendChild(T.card('<div class="stats">'+
+    T.stat("Current sheets", sheets.filter(function(s){return s.status==="Current";}).length, "across "+
+      Object.keys(sheets.reduce(function(a,s){a[s.proj]=1;return a;},{})).length+" projects")+
+    T.stat("Transmittals on record", trans.length, "who got what, when, how")+
+    T.stat("Building from an OLD set", stale.length, stale.length? "call them today" : "everyone is current", stale.length?"bad":"good")+
+    '</div>'+
+    (stale.length? ('<div class="fence amber">'+stale.map(function(s){
+      return '⚠ <b>'+T.esc(s.to)+'</b> holds '+T.esc(s.sheet)+' <span class="dr-old">rev '+T.esc(s.has)+'</span> — current is rev '+T.esc(s.current)+' ('+T.esc(s.proj)+')';
+    }).join('<br>')+'</div>') : '')));
+
+  /* add sheet / bump rev */
+  var projOpts=(d.projects||[]).map(function(p){return '<option>'+T.esc(p.name)+'</option>';}).join("");
+  var addCard=T.card('<h2>Register a sheet · bump a revision</h2><div class="card-sub">Same sheet number + project = the old one is auto-superseded. Nova fill drafts it.</div>'+
+    '<div class="dr-form">'+
+      '<div><label>Sheet no.</label><input id="drNo" placeholder="C-101"></div>'+
+      '<div class="wide" style="grid-column:span 2"><label>Title</label><input id="drTitle" placeholder="Site Plan"></div>'+
+      '<div><label>Rev</label><input id="drRev" placeholder="A" maxlength="3"></div>'+
+      '<div class="wide" style="grid-column:span 2"><label>Project</label><select id="drProj"><option value=""></option>'+projOpts+'</select></div>'+
+      '<div><label>Date</label><input type="date" id="drDate"></div>'+
+      '<div style="align-self:end"><button class="btn btn-acc" id="drAdd" style="width:100%">Register →</button></div>'+
+    '</div>');
+  c.appendChild(addCard);
+  addCard.querySelector("#drAdd").onclick=function(){
+    var no=addCard.querySelector("#drNo").value.trim(), proj=addCard.querySelector("#drProj").value;
+    if(!no||!proj){ T.toast("Sheet number and project, minimum."); return; }
+    T.save(function(x){
+      x.drawings=x.drawings||[];
+      x.drawings.forEach(function(s){ if(s.no===no && s.proj===proj && s.status==="Current") s.status="Superseded"; });
+      x.drawings.unshift({ id:"s"+Date.now(), no:no, title:addCard.querySelector("#drTitle").value.trim(),
+        proj:proj, rev:(addCard.querySelector("#drRev").value.trim()||"A").toUpperCase(),
+        date:addCard.querySelector("#drDate").value||new Date().toISOString().slice(0,10), status:"Current" });
+      x.bus.push({ id:"e"+(x.seq++), dept:"ops", topic:"drawings.rev", kind:"file",
+        from:"Drafting", to:"the register", body:no+" registered on "+proj+" — older revs auto-superseded.", at:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) });
+    });
+    T.toast(no+" registered — old revs superseded."); setTimeout(function(){location.reload();},600);
+  };
+
+  /* transmittal */
+  var txCard=T.card('<h2>Log a transmittal</h2>'+
+    '<div class="dr-form">'+
+      '<div class="wide" style="grid-column:span 2"><label>Sent to</label><input id="txTo" placeholder="GC — Arc Builders LLC"></div>'+
+      '<div><label>Project</label><select id="txProj"><option value=""></option>'+projOpts+'</select></div>'+
+      '<div><label>Via</label><select id="txVia"><option>Email PDF</option><option>Portal upload</option><option>Paper set</option><option>Flash drive</option></select></div>'+
+      '<div class="wide"><label>Sheets &amp; revs (dot-separated: C-101 rev C · C-201 rev B)</label><input id="txSheets" placeholder="C-101 rev C · C-201 rev B"></div>'+
+      '<div><label>Date</label><input type="date" id="txDate"></div>'+
+      '<div style="align-self:end"><button class="btn btn-ghost" id="txAdd" style="width:100%">Log it →</button></div>'+
+    '</div>');
+  c.appendChild(txCard);
+  txCard.querySelector("#txAdd").onclick=function(){
+    var to=txCard.querySelector("#txTo").value.trim(), proj=txCard.querySelector("#txProj").value;
+    if(!to||!proj){ T.toast("Recipient and project, minimum."); return; }
+    T.save(function(x){
+      x.transmittals=x.transmittals||[];
+      x.transmittals.unshift({ id:"t"+Date.now(), to:to, proj:proj, via:txCard.querySelector("#txVia").value,
+        sheets:txCard.querySelector("#txSheets").value.trim(), date:txCard.querySelector("#txDate").value||new Date().toISOString().slice(0,10) });
+    });
+    T.toast("Transmittal logged — the register knows who holds what."); setTimeout(function(){location.reload();},600);
+  };
+
+  /* tables */
+  function tbl(rows,cols){
+    return '<table class="dr-tbl"><tr>'+cols.map(function(x){return '<th>'+x+'</th>';}).join("")+'</tr>'+rows+'</table>';
+  }
+  c.appendChild(T.card('<h2>Sheet index</h2>'+
+    (sheets.length? tbl(sheets.map(function(s){
+      return '<tr'+(s.status==="Superseded"?' style="opacity:.45"':'')+'><td class="dr-rev">'+T.esc(s.no)+'</td><td>'+T.esc(s.title||"")+'</td><td>'+T.esc(s.proj)+'</td><td class="dr-rev">'+T.esc(s.rev)+'</td><td>'+T.esc(s.date||"")+'</td><td>'+T.tag(s.status, s.status==="Current"?"good":"")+'</td></tr>';
+    }).join(""),["Sheet","Title","Project","Rev","Date","Status"]) : '<p class="muted">No sheets registered yet.</p>')));
+
+  c.appendChild(T.card('<h2>Transmittal record</h2>'+
+    (trans.length? tbl(trans.map(function(t){
+      return '<tr><td>'+T.esc(t.date||"")+'</td><td>'+T.esc(t.to)+'</td><td>'+T.esc(t.proj)+'</td><td>'+T.esc(t.via||"")+'</td><td>'+T.esc(t.sheets||"")+'</td></tr>';
+    }).join(""),["Date","To","Project","Via","Sheets"]) : '<p class="muted">No transmittals logged yet.</p>')+
+    '<p class="sub" style="margin-top:8px">A contractor building from a superseded grading sheet is the most expensive phone call in civil engineering. This register is how it never happens to this firm.</p>'));
+})();
+</script>
+</body>
+</html>
