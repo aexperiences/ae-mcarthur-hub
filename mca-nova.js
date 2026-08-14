@@ -363,7 +363,7 @@
       document.querySelectorAll(".nav .navlink").forEach(function(a){
         var href = (a.getAttribute("href")||"").replace(".html","");
         if (href==="javascript:void(0)") { a.style.display="none"; return; } /* locked upsell rooms: hide off Scott's seat */
-        if (href && !allowed(href)) a.style.display = "none";
+        if (href && !allowed(href) && !a.hasAttribute("data-mca-keep")) a.style.display = "none";
       });
       document.querySelectorAll(".nav .nav-group").forEach(function(g){
         var n = g.nextElementSibling, any = false;
@@ -419,4 +419,19 @@
     var s=document.createElement("script"); s.id="mcaPaperLd"; s.src="mca-paper.js"; s.defer=true;
     document.head.appendChild(s);
   }
+})();
+
+/* WELCOME LINK (Aug 14 2026) — the gift page, pinned to the bottom of the nav for EVERY seat. */
+(function(){
+  var tries=0;
+  (function wait(){
+    var nav=document.querySelector(".nav");
+    if (!nav){ if(++tries>40) return; return setTimeout(wait,200); }
+    if (document.getElementById("mcaWelcomeLink")) return;
+    var a=document.createElement("a");
+    a.id="mcaWelcomeLink"; a.href="welcome.html"; a.className="navlink"; a.setAttribute("data-mca-keep","1");
+    a.style.cssText="margin-top:14px;border-top:1px solid rgba(255,255,255,.12);padding-top:14px";
+    a.innerHTML='<span class="ic">🎁</span><span class="lb">Your Welcome · In the Box</span>';
+    nav.appendChild(a);
+  })();
 })();
