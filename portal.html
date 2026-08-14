@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project Status · McArthur Engineering</title>
+<link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2b3a;--blue:#3f6d92;--amber:#e8a33d;--paper:#f7f5f0;--line:#e4e0d7;--mut:#5f6b76}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(160deg,#1a2b3a,#22384c 60%,#2c4258);font-family:'IBM Plex Sans',system-ui,sans-serif;padding:26px 18px}
+.bp{position:fixed;inset:0;opacity:.12;background-image:linear-gradient(#6f9bbd 1px,transparent 1px),linear-gradient(90deg,#6f9bbd 1px,transparent 1px);background-size:34px 34px}
+.wrap{position:relative;max-width:640px;margin:0 auto}
+.card{background:var(--paper);border-radius:18px;padding:30px 30px 22px;box-shadow:0 30px 80px rgba(0,0,0,.4);border-top:5px solid var(--amber);margin-bottom:16px}
+.hd{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.hd img{width:46px;height:46px}
+.hd .t{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--navy)}
+.hd .s{font-size:12px;color:var(--mut)}
+h1{font-family:'Fraunces',serif;font-size:22px;color:var(--navy);margin:14px 0 2px}
+.sub{color:var(--mut);font-size:13.5px;margin:0 0 18px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin:14px 0}
+.m .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut)}
+.m .v{font-weight:600;color:var(--navy);font-size:14.5px;margin-top:2px}
+.bar{background:#e6e2d8;border-radius:99px;height:14px;overflow:hidden;margin:6px 0 4px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--amber));border-radius:99px}
+.phases{display:flex;gap:6px;margin:16px 0 6px}
+.ph{flex:1;text-align:center;font-size:11px;font-weight:700;padding:8px 4px;border-radius:9px;background:#fff;border:1.5px solid var(--line);color:var(--mut)}
+.ph.done{background:var(--navy);border-color:var(--navy);color:#cfe0ee}
+.ph.now{background:var(--amber);border-color:var(--amber);color:#241a08}
+select{width:100%;padding:12px;border-radius:11px;border:1.5px solid #c9d2da;font-family:inherit;font-size:14.5px;background:#fff}
+.note{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 14px;font-size:12.5px;color:var(--mut);line-height:1.5;margin-top:14px}
+.contact{font-size:13.5px;color:var(--navy);line-height:1.7}
+.contact b{display:block;font-size:14.5px}
+.foot{text-align:center;font-size:11.5px;color:#9fb2c2;margin-top:8px}
+.foot a{color:#cfe0ee}
+/* client-facing: no internal OS chrome */
+.mca-bus,.mca-fill,#aeCooFab,#aeCooPanel{display:none!important}
+</style></head><body>
+<div class="bp"></div>
+<div class="wrap">
+  <div class="card">
+    <div class="hd"><img src="mca-mark.svg" alt=""><div><div class="t">McArthur Engineering</div><div class="s">Client project status</div></div></div>
+    <div id="pick" style="display:none"><p class="sub" style="margin-top:10px">Choose your project:</p><select id="sel"></select></div>
+    <div id="view"></div>
+    <div class="note" id="sampleNote" style="display:none"><b>Preview.</b> This portal is showing sample data until the firm goes live on its real book.</div>
+  </div>
+  <div class="card" style="padding:22px 30px">
+    <div class="contact"><b>Questions about your project?</b>
+    McArthur Engineering Company LLC · 14841 Idaho 41, Rathdrum, ID<br>(208) 446-3307 · admin@mcarthur-eng.com · Mon–Fri 8:00–4:30</div>
+  </div>
+  <div class="foot">Private status link · Built for McArthur Engineering by Accelerated Experiences LLC</div>
+</div>
+<script src="truss.js"></script>
+<script>
+(function(){
+  var T=window.Truss, d=T.db();
+  var PH=["P30","P60","P90","P100"], PHL={P30:"30% Design",P60:"60% Design",P90:"90% · QA/QC",P100:"Issued for Construction"};
+  if (T.isSample()) document.getElementById("sampleNote").style.display="block";
+  function esc(s){return T.esc(s);}
+  function render(p){
+    var idx=PH.indexOf(p.phase);
+    var phases=PH.map(function(k,i){
+      var cls = i<idx ? "done" : (i===idx ? "now" : "");
+      return '<div class="ph '+cls+'">'+PHL[k]+'</div>';
+    }).join("");
+    document.getElementById("view").innerHTML =
+      '<h1>'+esc(p.name)+'</h1><p class="sub">Project No. '+esc(p.number||"—")+' · '+esc(p.type||"")+'</p>'+
+      '<div class="phases">'+phases+'</div>'+
+      '<div class="bar"><i style="width:'+Math.max(2,Math.min(100,p.pctComplete||0))+'%"></i></div>'+
+      '<div style="font-size:12.5px;color:var(--mut)"><b style="color:var(--navy)">'+(p.pctComplete||0)+'% complete</b>'+(p.sealed?' · Sealed by '+esc(p.sealBy):'')+'</div>'+
+      '<div class="meta">'+
+      '<div class="m"><div class="k">Project lead</div><div class="v">'+esc(p.lead||"—")+'</div></div>'+
+      '<div class="m"><div class="k">Target date</div><div class="v">'+esc(p.target||"—")+'</div></div>'+
+      '<div class="m"><div class="k">Current phase</div><div class="v">'+esc(PHL[p.phase]||p.phase||"—")+'</div></div>'+
+      '<div class="m"><div class="k">Standards</div><div class="v">'+esc((p.standards||[]).join(", ")||"—")+'</div></div>'+
+      '</div>';
+  }
+  var q=new URLSearchParams(location.search).get("job");
+  var p=q ? d.projects.filter(function(x){return x.number===q;})[0] : null;
+  if (p){ render(p); }
+  else {
+    var pick=document.getElementById("pick"), sel=document.getElementById("sel");
+    pick.style.display="block";
+    sel.innerHTML=d.projects.map(function(x){return '<option value="'+esc(x.number)+'">'+esc(x.name)+' — No. '+esc(x.number)+'</option>';}).join("");
+    function go(){ var pr=d.projects.filter(function(x){return x.number===sel.value;})[0]; if(pr) render(pr);
+      history.replaceState(null,"","portal.html?job="+encodeURIComponent(sel.value)); }
+    sel.addEventListener("change",go); go();
+  }
+})();
+</script></body></html>
