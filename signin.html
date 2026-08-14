@@ -8,16 +8,24 @@
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
 background:linear-gradient(160deg,#1a2b3a,#22384c 60%,#2c4258);font-family:'IBM Plex Sans',system-ui,sans-serif;padding:22px}
 .bp{position:fixed;inset:0;opacity:.13;background-image:linear-gradient(#6f9bbd 1px,transparent 1px),linear-gradient(90deg,#6f9bbd 1px,transparent 1px);background-size:34px 34px}
-.card{position:relative;background:var(--paper);border-radius:20px;max-width:460px;width:100%;padding:38px 36px 28px;box-shadow:0 40px 90px rgba(0,0,0,.4);border-top:5px solid var(--amber)}
+.card{position:relative;background:var(--paper);border-radius:20px;max-width:500px;width:100%;padding:38px 36px 28px;box-shadow:0 40px 90px rgba(0,0,0,.4);border-top:5px solid var(--amber)}
 .mk{width:60px;height:60px;display:block;margin:0 auto 14px}
 h1{font-family:'Fraunces',serif;font-weight:600;font-size:24px;text-align:center;margin:0 0 4px;color:var(--navy)}
-.sub{text-align:center;color:var(--mut);font-size:13.5px;margin:0 0 24px;line-height:1.5}
-.btn{display:block;width:100%;background:var(--amber);color:#241a08;border:none;border-radius:12px;padding:17px;font-weight:700;font-size:17px;cursor:pointer;text-align:center;text-decoration:none}
-.btn:hover{background:#c9832a}
-.who{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:18px;font-size:13px;color:var(--mut);line-height:1.55}
-.who b{color:var(--navy)}
-.roles{margin:8px 0 0;padding-left:16px}
-.roles li{margin:3px 0}
+.sub{text-align:center;color:var(--mut);font-size:13.5px;margin:0 0 20px;line-height:1.5}
+.seat{display:flex;align-items:center;gap:13px;width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;margin:8px 0;cursor:pointer;text-align:left;text-decoration:none;transition:border-color .15s, box-shadow .15s}
+.seat:hover{border-color:var(--amber);box-shadow:0 6px 18px rgba(26,43,58,.10)}
+.seat.owner{background:var(--amber);border-color:var(--amber)}
+.seat.owner:hover{background:#dd9832}
+.av{flex:0 0 42px;width:42px;height:42px;border-radius:11px;background:var(--navy);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+.seat.owner .av{background:#241a08}
+.sn{font-weight:700;color:var(--navy);font-size:15px}
+.seat.owner .sn{color:#241a08}
+.st{color:var(--mut);font-size:12.5px;margin-top:1px}
+.seat.owner .st{color:#5d4517}
+.go{margin-left:auto;color:var(--blue);font-weight:700}
+.seat.owner .go{color:#241a08}
+.note{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin-top:16px;font-size:12.5px;color:var(--mut);line-height:1.55}
+.note b{color:var(--navy)}
 .back{display:block;text-align:center;margin-top:16px;color:var(--blue);font-size:13.5px;text-decoration:none;font-weight:600}
 .foot{text-align:center;font-size:11.5px;color:var(--mut);margin-top:14px}
 </style></head><body>
@@ -25,21 +33,15 @@ h1{font-family:'Fraunces',serif;font-weight:600;font-size:24px;text-align:center
 <div class="card">
   <img class="mk" src="mca-mark.svg" alt="McArthur Engineering">
   <h1>Your Office</h1>
-  <div class="sub">This is the <b>private</b> side — your operating system.<br>Nobody sees this but you and your people.</div>
+  <div class="sub">Pick your seat — <b>one click, no password</b>.<br>Each person walks into their own view of the firm.</div>
 
-  <a class="btn" href="dashboard.html">Enter as Scott — one click, no password →</a>
+  <a class="seat owner" href="dashboard.html?seat=scott"><span class="av">SM</span><span><span class="sn">Scott McArthur, PE</span><span class="st" style="display:block">Principal · Engineer of Record — sees everything</span></span><span class="go">→</span></a>
+  <a class="seat" href="projects.html?seat=christian"><span class="av">CN</span><span><span class="sn">Christian Nead</span><span class="st" style="display:block">Project &amp; Construction Manager — projects, field, billing</span></span><span class="go">→</span></a>
+  <a class="seat" href="drawings.html?seat=cameron"><span class="av">CS</span><span><span class="sn">Cameron Sayers</span><span class="st" style="display:block">Project Drafter — drawings, projects, records</span></span><span class="go">→</span></a>
+  <a class="seat" href="calcs.html?seat=foster"><span class="av">FK</span><span><span class="sn">Foster Kirsch, EIT</span><span class="st" style="display:block">Engineer in Training — calcs, PDH ladder</span></span><span class="go">→</span></a>
+  <a class="seat" href="contacts.html?seat=angela"><span class="av">AO</span><span><span class="sn">Angela Owens</span><span class="st" style="display:block">Administrative Assistant — front office, billing paperwork</span></span><span class="go">→</span></a>
 
-  <div class="who">
-    <b>When this is real, each person gets their own sign-in:</b>
-    <ul class="roles">
-      <li><b>Scott</b> — Owner. Sees everything: money, projects, the seal.</li>
-      <li><b>Christian</b> — Projects &amp; the field. No books.</li>
-      <li><b>Cameron</b> — Drawings &amp; projects.</li>
-      <li><b>Foster</b> — His assignments only.</li>
-      <li><b>Angela</b> — Front office, billing paperwork, calendar.</li>
-    </ul>
-    You decide who sees what. For this preview, the door's just open.
-  </div>
+  <div class="note"><b>This is the privilege preview.</b> Every seat sees only its own rooms — try one, then hit the name in the top corner to switch. When this runs for real, each person gets their own private sign-in and you decide who sees what.</div>
 
   <a class="back" href="index.html">← Back to the public website</a>
   <div class="foot">Private &amp; secure · Built by Accelerated Experiences, LLC — an Esposito family business</div>
