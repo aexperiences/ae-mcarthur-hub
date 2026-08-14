@@ -314,3 +314,83 @@
     var f=document.querySelector(".mca-fill"); if(f){ f.style.bottom="86px"; }
   }
 })();
+
+/* ============================================================================
+   MCA SEAT DOORS (Aug 14 2026) — per-position entry, no password.
+   Each seat sees only its own rooms; the chrome shows who's signed in.
+   Seat comes from ?seat= on any page (set by signin.html), then localStorage.
+   Built for McArthur Engineering by Accelerated Experiences LLC.
+============================================================================ */
+(function(){
+  var SHARED = ["contacts","calendar","connect","org"];
+  var SEATS = {
+    scott:     { av:"SM", name:"Scott McArthur, PE", title:"Principal · Engineer of Record", home:"dashboard.html", all:true,
+                 does:"Scott sees everything — money, projects, the seal." },
+    christian: { av:"CN", name:"Christian Nead", title:"Project & Construction Manager", home:"projects.html",
+                 pages:["projects","workflow","field","drawings","billing","permits","records","meet","modules"].concat(SHARED),
+                 does:"Christian runs the work — projects, the field, drawings, billing. The books, the seal and pricing stay with Scott." },
+    cameron:   { av:"CS", name:"Cameron Sayers", title:"Project Drafter", home:"drawings.html",
+                 pages:["drawings","projects","records"].concat(SHARED),
+                 does:"Cameron keeps the sheets honest — the drawing register, projects and records." },
+    foster:    { av:"FK", name:"Foster Kirsch, EIT", title:"Engineer in Training", home:"calcs.html",
+                 pages:["calcs","hr","projects","records"].concat(SHARED),
+                 does:"Foster works his assignments — calcs staged for review and his PDH ladder. Staging is not sealing." },
+    angela:    { av:"AO", name:"Angela Owens", title:"Administrative Assistant", home:"contacts.html",
+                 pages:["contacts","calendar","connect","records","billing","meet","org"],
+                 does:"Angela runs the front office — contacts, the calendar, Connect, records and billing paperwork." }
+  };
+  function pageId(){ var p=(location.pathname.split("/").pop()||"dashboard.html").replace(".html",""); return p||"dashboard"; }
+  var qs = new URLSearchParams(location.search);
+  if (qs.get("seat") && SEATS[qs.get("seat")]) { try{ localStorage.setItem("mca_seat", qs.get("seat")); }catch(e){} }
+  var seatId = "scott";
+  try { seatId = localStorage.getItem("mca_seat") || "scott"; } catch(e){}
+  if (!SEATS[seatId]) seatId = "scott";
+  var seat = SEATS[seatId];
+  function allowed(pg){ return seat.all || seat.pages.indexOf(pg)>=0; }
+
+  function apply(){
+    var bar = document.querySelector(".topbar");
+    if (!bar) { return false; }
+    /* identity chip */
+    var who = document.querySelector(".topbar .who");
+    if (who){
+      who.innerHTML = '<div class="av">'+seat.av+'</div><div>'+seat.name+'<br><span class="muted small">'+seat.title+'</span></div>';
+      who.style.cursor = "pointer"; who.title = "Switch seat";
+      who.addEventListener("click", function(){ location.href = "signin.html"; });
+    }
+    /* nav filtering */
+    if (!seat.all){
+      document.querySelectorAll(".nav .navlink").forEach(function(a){
+        var href = (a.getAttribute("href")||"").replace(".html","");
+        if (href==="javascript:void(0)") { a.style.display="none"; return; } /* locked upsell rooms: hide off Scott's seat */
+        if (href && !allowed(href)) a.style.display = "none";
+      });
+      document.querySelectorAll(".nav .nav-group").forEach(function(g){
+        var n = g.nextElementSibling, any = false;
+        while (n && !n.classList.contains("nav-group")) { if (n.style.display!=="none") any = true; n = n.nextElementSibling; }
+        if (!any) g.style.display = "none";
+      });
+      /* pricing/tier chrome is the owner's business */
+      var pill=document.querySelector(".tierpill"); if(pill) pill.style.display="none";
+      var menu=document.getElementById("tierMenu"); if(menu) menu.style.display="none";
+    }
+    /* page gate */
+    var pg = pageId();
+    if (!seat.all && !allowed(pg) && pg!=="signin" && pg!=="index"){
+      var content = document.getElementById("content");
+      if (content){
+        content.innerHTML =
+          '<div style="max-width:560px;margin:60px auto;text-align:center;background:#fff;border:1px solid #e4e0d7;border-radius:16px;padding:38px 34px;box-shadow:0 18px 50px rgba(26,43,58,.08)">'+
+          '<div style="width:54px;height:54px;margin:0 auto 14px;border-radius:14px;background:#1a2b3a;display:flex;align-items:center;justify-content:center;color:#e8a33d;font-weight:700;font-size:20px">'+seat.av+'</div>'+
+          '<h2 style="font-family:Fraunces,serif;color:#1a2b3a;margin:0 0 8px">This room isn’t part of '+seat.name.split(",")[0].split(" ")[0]+'’s seat</h2>'+
+          '<p style="color:#5f6b76;line-height:1.6;margin:0 0 22px">'+seat.does+'</p>'+
+          '<a href="'+seat.home+'" style="display:inline-block;background:#e8a33d;color:#241a08;font-weight:700;border-radius:10px;padding:12px 22px;text-decoration:none;margin-right:8px">Back to my desk →</a>'+
+          '<a href="signin.html" style="display:inline-block;background:#fff;border:1.5px solid #1a2b3a;color:#1a2b3a;font-weight:700;border-radius:10px;padding:12px 22px;text-decoration:none">Switch seat</a>'+
+          '</div>';
+      }
+    }
+    return true;
+  }
+  var tries = 0;
+  (function wait(){ if (apply() || ++tries > 40) return; setTimeout(wait, 150); })();
+})();
