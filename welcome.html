@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Welcome · McArthur Engineering OS</title>
+<link rel="icon" href="mca-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2b3a;--navy2:#22384c;--blue:#3f6d92;--amber:#e8a33d;--amber2:#f3c987;--paper:#f7f5f0;--line:#e4e0d7;--mut:#5f6b76;--ink:#243240}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:linear-gradient(160deg,#1a2b3a,#22384c 60%,#2c4258);font-family:'IBM Plex Sans',system-ui,sans-serif;color:var(--ink)}
+.bp{position:fixed;inset:0;opacity:.12;background-image:linear-gradient(#6f9bbd 1px,transparent 1px),linear-gradient(90deg,#6f9bbd 1px,transparent 1px);background-size:34px 34px;pointer-events:none}
+.wrap{position:relative;max-width:880px;margin:0 auto;padding:34px 18px 26px}
+.hd{text-align:center;color:#eaf2f8;margin-bottom:26px}
+.hd img{width:64px;height:64px}
+.hd h1{font-family:Fraunces,serif;font-weight:700;font-size:clamp(26px,4.6vw,38px);margin:12px 0 8px;color:#fdf6e9}
+.hd p{color:#b9cad8;font-size:15.5px;max-width:60ch;margin:0 auto;line-height:1.6}
+.ribbon{display:inline-block;margin-top:14px;background:linear-gradient(180deg,var(--amber2),var(--amber));color:#3a2b08;font-weight:700;font-size:13px;padding:8px 18px;border-radius:999px}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);font-weight:700;text-align:center;margin:0 0 6px}
+.h-sec{font-family:Fraunces,serif;color:#fdf6e9;text-align:center;font-size:clamp(20px,3.4vw,27px);margin:0 0 18px}
+/* ------- THE BOX ------- */
+.boxwrap{background:linear-gradient(180deg,#fffdf8,#f0ece1);border:1.5px solid var(--amber);border-radius:18px;box-shadow:0 26px 60px rgba(0,0,0,.45);overflow:hidden}
+.boxtop{background:linear-gradient(135deg,#152430,#1a2b3a 55%,#28405a);color:#e9f0f6;padding:22px 26px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.nm{font-family:Fraunces,serif;font-weight:700;font-size:22px;color:#fdf3e0;line-height:1.05}
+.nm span{color:var(--amber2);font-size:15px;font-weight:600}
+.subt{color:#c3d2df;font-size:14px;max-width:52ch;margin-top:4px;line-height:1.5}
+.badge{margin-left:auto;text-align:center;background:rgba(232,163,61,.14);border:1px solid var(--amber);border-radius:12px;padding:8px 14px;color:var(--amber2)}
+.badge b{display:block;font-size:14px}
+.badge small{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+.boxbody{padding:20px 26px 6px}
+.l2{font-size:15px;margin:0 0 17px;max-width:72ch;line-height:1.6}
+.incl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#a5761f;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:12px}
+.incl:after{content:"";flex:1;height:1px;background:var(--line)}
+.boxgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 26px}
+@media(max-width:760px){.boxgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.boxgrid{grid-template-columns:1fr}}
+.bgrp h5{margin:0 0 7px;font-size:13.5px;color:var(--navy)}
+.bgrp ul{margin:0;padding-left:16px;font-size:12.8px;color:#48586a;line-height:1.65}
+.bgrp li b{color:var(--navy)}
+.boxfoot{border-top:1px dashed var(--line);margin-top:16px;padding:14px 26px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
+.barcode{width:118px;height:30px;flex:none;background:repeating-linear-gradient(90deg,#1c2731 0 2px,transparent 2px 4px,#1c2731 4px 7px,transparent 7px 8.5px,#1c2731 8.5px 9.5px,transparent 9.5px 12.5px,#1c2731 12.5px 15px,transparent 15px 16px)}
+.bcnum{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--mut);margin-top:3px;text-align:center}
+.req{max-width:40ch;line-height:1.5}
+.pub{margin-left:auto;text-align:right;line-height:1.5}
+.pub b{color:var(--navy)}
+.cta{text-align:center;margin:26px 0 8px}
+.cta a{display:inline-block;background:linear-gradient(180deg,var(--amber2),var(--amber));color:#3a2b08;font-weight:700;border-radius:12px;padding:14px 26px;text-decoration:none;font-size:15.5px}
+.cta .alt{background:none;border:1.5px solid #6f8aa3;color:#dbe7f1;margin-left:10px}
+.foot{text-align:center;color:#8fa5b8;font-size:11.5px;padding:18px 0 30px}
+</style></head><body>
+<div class="bp"></div>
+<div class="wrap">
+  <div class="hd">
+    <img src="mca-mark.svg" alt="McArthur Engineering">
+    <h1>Welcome to the McArthur OS, Scott.</h1>
+    <p>This is the operating system built for McArthur Engineering Company LLC — your firm's whole practice on one backbone. Poke anything. It's yours to break in.</p>
+    <div class="ribbon">Built for you by Accelerated Experiences, LLC</div>
+  </div>
+
+  <p class="eyebrow">The short version — what you're actually getting</p>
+  <h2 class="h-sec">If it came in a box, here's what the box would say.</h2>
+
+  <div class="boxwrap">
+    <div class="boxtop">
+      <svg viewBox="0 0 48 48" width="58" height="58" aria-hidden="true" style="flex:none"><rect x="2" y="2" width="44" height="44" rx="12" fill="#10202e" stroke="#e8a33d" stroke-width="1.2"/><g fill="none" stroke="#eaf6f9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 36 V15 L24 27 L36 15 V36"/></g></svg>
+      <div><div class="nm">McArthur OS <span>V1</span></div><div class="subt">The complete engineering operating system for McArthur Engineering Company LLC — pursuits, projects, drawings, field, money, the seal, and the front office, all in one connected place.</div></div>
+      <div class="badge"><b>V1</b><small>AETriad engine</small></div>
+    </div>
+    <div class="boxbody">
+      <p class="l2">Not a pile of separate apps — <b>one system on one backbone</b>, so a won pursuit becomes a project, the project's percent-complete becomes the invoice, and the drawing register, field reports and books all read from the same spine. Here's everything inside:</p>
+      <p class="incl">What's in the box</p>
+      <div class="boxgrid">
+        <div class="bgrp"><h5>🧲 Win the work</h5><ul>
+          <li><b>Pursuits · Go/No-Go</b> — RFQs, RFPs &amp; referrals, bid on purpose</li>
+          <li><b>Proposals &amp; Fees</b> — phase-split 30/60/90/100, multiplier-checked</li>
+          <li><b>One-click proposal → PDF</b> — letterhead, fee table, signature line</li>
+          <li><b>Contacts book, 1,000+ real entries</b> — Kootenai, Idaho architects, Spokane engineers</li>
+        </ul></div>
+        <div class="bgrp"><h5>📐 Run the work</h5><ul>
+          <li><b>Projects · WBS</b> — phases drive the money automatically</li>
+          <li><b>Module Workflow</b> — RFIs &amp; submittals tracked to closure</li>
+          <li><b>Field Reports</b> — the day filed from the truck, photos &amp; punch lists</li>
+          <li><b>Drawing Register</b> — auto-supersede, stale sets flagged red</li>
+        </ul></div>
+        <div class="bgrp"><h5>💰 The money</h5><ul>
+          <li><b>Billing</b> — percent-complete becomes the draft invoice → PDF</li>
+          <li><b>Books &amp; multipliers</b> — utilization, WIP, net multiplier, live</li>
+          <li><b>Approval Desk</b> — nothing commits the firm without your nod</li>
+          <li><b>HR &amp; PDH ladder</b> — hours tracked toward every license</li>
+        </ul></div>
+        <div class="bgrp"><h5>🛡️ The license</h5><ul>
+          <li><b>PE Seal · IFC gate</b> — the software never seals; the gate protects the stamp</li>
+          <li><b>Calcs &amp; standards</b> — staged for review; staging is not sealing</li>
+          <li><b>Records &amp; filing</b> — one searchable cabinet</li>
+          <li><b>Permits &amp; AHJ</b> — every submittal cycle tracked</li>
+        </ul></div>
+        <div class="bgrp"><h5>🤖 Nova &amp; the org</h5><ul>
+          <li><b>Talk to Nova</b> — ask out loud, answers from your real numbers</li>
+          <li><b>Nova fill</b> — the AI drafts the form, a human saves it</li>
+          <li><b>Agent org &amp; bus</b> — the hierarchy at your fingertips</li>
+          <li><b>Honest by design</b> — sample jobs until you start your clean slate</li>
+        </ul></div>
+        <div class="bgrp"><h5>🧭 The cockpit</h5><ul>
+          <li><b>Command Center</b> — the whole firm on one sheet</li>
+          <li><b>Five seats, five privilege sets</b> — the right people see the right rooms</li>
+          <li><b>Client portal</b> — a status link per project, no phone tag</li>
+          <li><b>Installs like an app</b> — phone, tablet, desktop; works offline in the field</li>
+          <li><b>Connect + calendar</b> — chat, native video, subscribe once</li>
+          <li><b>Export anything</b> — it's your data, always</li>
+        </ul></div>
+      </div>
+    </div>
+    <div class="boxfoot">
+      <div><div class="barcode" aria-hidden="true"></div><div class="bcnum">AE·MCA·OS·V1·2026</div></div>
+      <div class="req"><b>Requires:</b> a web browser. Runs on any computer, tablet, or phone — nothing to install, nothing to babysit.</div>
+      <div class="pub"><b>McArthur OS V1</b><br>Powered by AETriad · Accelerated Experiences, LLC</div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <a href="signin.html">Step inside — pick your seat →</a>
+    <a class="alt" href="index.html">See the public site</a>
+  </div>
+  <div class="foot">Built for McArthur Engineering by Accelerated Experiences, LLC · Post Falls, Idaho — an Esposito family business</div>
+</div>
+</body></html>
