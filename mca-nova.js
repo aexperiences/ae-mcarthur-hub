@@ -394,3 +394,29 @@
   var tries = 0;
   (function wait(){ if (apply() || ++tries > 40) return; setTimeout(wait, 150); })();
 })();
+
+/* ============================================================================
+   MCA APP LAYER (Aug 14 2026) — installable PWA + the Paper machine.
+   Manifest + icons + service worker (network-first), and mca-paper.js
+   (proposal/invoice PDFs, client portal link). $0 stack.
+============================================================================ */
+(function(){
+  function addLink(rel, href, extra){
+    if (document.querySelector('link[rel="'+rel+'"]')) return;
+    var l=document.createElement("link"); l.rel=rel; l.href=href;
+    if (extra) Object.keys(extra).forEach(function(k){ l.setAttribute(k, extra[k]); });
+    document.head.appendChild(l);
+  }
+  addLink("manifest","manifest.json");
+  addLink("apple-touch-icon","apple-touch-icon.png",{sizes:"180x180"});
+  if (!document.querySelector('meta[name="theme-color"]')){
+    var m=document.createElement("meta"); m.name="theme-color"; m.content="#1a2b3a"; document.head.appendChild(m);
+  }
+  if ("serviceWorker" in navigator) {
+    try { navigator.serviceWorker.register("sw.js"); } catch(e){}
+  }
+  if (!document.getElementById("mcaPaperLd")) {
+    var s=document.createElement("script"); s.id="mcaPaperLd"; s.src="mca-paper.js"; s.defer=true;
+    document.head.appendChild(s);
+  }
+})();
