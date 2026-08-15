@@ -50,8 +50,33 @@
   var ROZ = { greet:"roz-greet.mp3", fill:"roz-fill.mp3", nokey:"roz-nokey.mp3", ack:"roz-ack.mp3",
               lead:["roz-lead1.mp3","roz-lead2.mp3","roz-lead3.mp3"] };
   function rozPlay(src){ if(!speakOn||!src) return; audioEl = audioEl || new Audio(); audioEl.src = src; audioEl.play().catch(function(){}); }
+  /* Full Roz answers — pre-rendered on the voice machine for the sample spine.
+     Matched by answer text; unshipped clips fall back to a Roz lead-in. */
+  var ROZ_ANS = [
+    ["Morning Scott", "roz-ans-open.mp3"],
+    ["Licensure and PDH are current", "roz-ans-hr.mp3"],
+    ["Put the effort behind the", "roz-ans-pursuits.mp3"],
+    ["Protect the Prairie Ave 90% set", "roz-ans-design.mp3"],
+    ["Clear the 3 items", "roz-ans-field.mp3"],
+    ["Nova: Holding this for you — Money", "roz-ans-money.mp3"],
+    ["Finish the independent check", "roz-ans-standards.mp3"],
+    ["Close the 5 open agency", "roz-ans-permits.mp3"],
+    ["WATCH:", "roz-ans-it.mp3"],
+    ["Nova: Holding this for you — Law", "roz-ans-law.mp3"],
+    ["The bottleneck is the seal gate", "roz-ans-ops.mp3"]
+  ];
   function speak(text, kind){
     if (!speakOn) return;
+    var t = String(text||"").replace(/\s+/g," ").trim();
+    for (var i=0;i<ROZ_ANS.length;i++){
+      if (t.indexOf(ROZ_ANS[i][0]) === 0){
+        audioEl = audioEl || new Audio();
+        audioEl.onerror = function(){ this.onerror=null; rozPlay(ROZ.lead[Math.floor(Math.random()*ROZ.lead.length)]); };
+        audioEl.src = ROZ_ANS[i][1];
+        audioEl.play().catch(function(){});
+        return;
+      }
+    }
     if (kind && ROZ[kind] && !Array.isArray(ROZ[kind])) return rozPlay(ROZ[kind]);
     rozPlay(ROZ.lead[Math.floor(Math.random()*ROZ.lead.length)]);
   }
