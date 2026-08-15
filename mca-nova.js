@@ -45,33 +45,15 @@
   }
   if (window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
   function stripHtml(s){ var d=document.createElement("div"); d.innerHTML=s; return (d.textContent||"").replace(/\s+/g," ").trim(); }
-  var voiceKeyIn = null; // null=unknown, true/false learned from first call
-  function speak(text){
+  /* Nova speaks as ROZ — clips cut on the AE Voice Machine (sandbox engine, $0).
+     No browser TTS, no cloud voice. A wav IS a clone; Roz lives on the voices/ shelf. */
+  var ROZ = { greet:"roz-greet.mp3", fill:"roz-fill.mp3", nokey:"roz-nokey.mp3", ack:"roz-ack.mp3",
+              lead:["roz-lead1.mp3","roz-lead2.mp3","roz-lead3.mp3"] };
+  function rozPlay(src){ if(!speakOn||!src) return; audioEl = audioEl || new Audio(); audioEl.src = src; audioEl.play().catch(function(){}); }
+  function speak(text, kind){
     if (!speakOn) return;
-    text = stripHtml(text); if(!text) return;
-    if (text.length > 420) text = text.slice(0, 400).replace(/[^.!?]*$/,"");
-    if (voiceKeyIn !== false){
-      fetch(API,{method:"POST",headers:{"content-type":"application/json"},
-        body:JSON.stringify({do:"speak",text:text})})
-      .then(function(r){return r.json();})
-      .then(function(r){
-        if (r && r.ok && r.audio){ voiceKeyIn = true;
-          audioEl = audioEl || new Audio();
-          audioEl.src = "data:audio/mpeg;base64," + r.audio;
-          audioEl.play().catch(function(){ synth(text); });
-        } else { voiceKeyIn = false; synth(text); }
-      }).catch(function(){ synth(text); });
-    } else synth(text);
-  }
-  function synth(text){
-    try{
-      if (!window.speechSynthesis) return;
-      speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      if (bestVoice) u.voice = bestVoice;
-      u.rate = 1.02; u.pitch = 1.0;
-      speechSynthesis.speak(u);
-    }catch(e){}
+    if (kind && ROZ[kind] && !Array.isArray(ROZ[kind])) return rozPlay(ROZ[kind]);
+    rozPlay(ROZ.lead[Math.floor(Math.random()*ROZ.lead.length)]);
   }
 
   /* ------------------------------------------------- spine snapshot ------ */
@@ -170,7 +152,7 @@
       spk.style.cssText = "margin-left:auto;border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:8px;padding:2px 9px;cursor:pointer;font-size:12px";
       function paint(){ spk.textContent = speakOn ? "🔊 voice on" : "🔇 voice off"; }
       paint();
-      spk.onclick = function(){ unlock(); speakOn=!speakOn; localStorage.setItem("mca_nova_speak", speakOn?"on":"off"); paint(); if(!speakOn){ try{speechSynthesis.cancel(); if(audioEl) audioEl.pause();}catch(e){} } };
+      spk.onclick = function(){ unlock(); speakOn=!speakOn; localStorage.setItem("mca_nova_speak", speakOn?"on":"off"); paint(); if(speakOn){ rozPlay(ROZ.greet); } else { try{ if(audioEl) audioEl.pause(); }catch(e){} } };
       head.appendChild(spk);
     }
 
