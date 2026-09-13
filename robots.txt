@@ -1,0 +1,4 @@
+# McArthur Engineering hub — a proposal walkthrough, not a public site.
+# Nothing here is meant to be indexed while the engagement is unsigned.
+User-agent: *
+Disallow: /
